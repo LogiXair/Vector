@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #F4F4F2; }
+  body { font-family: Archivo, Helvetica, sans-serif; -webkit-font-smoothing: antialiased; }
+  a { color: #C33A27; text-decoration: none; }
+  a:hover { color: #1A1C1F; }
+  @keyframes vecPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.25; } }
+</style>
+</helmet>
+
+<div style="width:100%;max-width:100%;overflow:hidden;background:#F4F4F2;color:#1A1C1F">
+
+  <header style="position:sticky;top:0;z-index:50;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px 24px;padding:14px 28px;background:rgba(244,244,242,0.94);backdrop-filter:blur(8px);border-bottom:1px solid #D6D6D2">
+    <div style="display:flex;align-items:baseline;gap:10px">
+      <span style="font-size:19px;font-weight:800;letter-spacing:-0.02em">LOGIXAIR</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.18em;color:#C33A27">VECTOR</span>
+    </div>
+    <nav style="display:flex;flex-wrap:wrap;align-items:center;gap:22px;font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:0.08em">
+      <a href="#suite" style="color:#54585F">THE SUITE</a>
+      <a href="#flow" style="color:#54585F">HOW IT CONNECTS</a>
+      <a href="#platform" style="color:#54585F">PLATFORM</a>
+      <a href="#who" style="color:#54585F">WHO IT'S FOR</a>
+    </nav>
+    <a href="#contact" style="font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:0.08em;color:#F4F4F2;background:#1A1C1F;padding:10px 16px;border-radius:2px;white-space:nowrap">REQUEST A WALKTHROUGH</a>
+  </header>
+
+  <section style="position:relative;padding:92px 28px 0;border-bottom:1px solid #D6D6D2">
+    <sc-if value="{{ showGrid }}" hint-placeholder-val="{{ true }}">
+      <div style="position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(#1A1C1F 1px,transparent 1px),linear-gradient(90deg,#1A1C1F 1px,transparent 1px);background-size:56px 56px;opacity:0.045"></div>
+    </sc-if>
+    <div style="position:relative;max-width:1240px;margin:0 auto">
+      <div style="display:flex;align-items:center;gap:12px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.16em;color:#5E636B;margin-bottom:28px">
+        <span style="display:inline-block;width:8px;height:8px;background:#C33A27;animation:vecPulse 2.4s infinite"></span>
+        <span>L560 GROUND SEGMENT · FOUR PRODUCTS, ONE OPERATION</span>
+      </div>
+      <h1 style="margin:0;font-size:clamp(40px,6.2vw,92px);line-height:0.95;font-weight:800;letter-spacing:-0.035em;max-width:18ch;text-wrap:balance">The operating system for uncrewed cargo.</h1>
+      <p style="margin:28px 0 0;max-width:60ch;font-size:clamp(16px,1.5vw,20px);line-height:1.5;color:#3C4046;text-wrap:pretty">Vector runs the LogiXair network end to end. Ground handles the pod, Air flies the corridor, Maintenance keeps the fleet serviceable, Roster matches demand to aircraft. Four consoles, one shared record of the operation.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;margin:40px 0 0">
+        <a href="#suite" style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.08em;color:#101216;background:#E8523F;padding:15px 26px;border-radius:2px;white-space:nowrap;flex:0 0 auto">SEE THE FOUR PRODUCTS ↓</a>
+        <a href="Vector Air.dc.html" style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.08em;color:#1A1C1F;border:1px solid #1A1C1F;padding:15px 26px;border-radius:2px;white-space:nowrap;flex:0 0 auto">OPEN A LIVE CONSOLE →</a>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;margin:72px 0 0;background:#D6D6D2;border-top:1px solid #D6D6D2">
+        <sc-for list="{{ heroStats }}" as="h" hint-placeholder-count="5">
+          <div style="background:#F4F4F2;padding:22px 20px 26px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.14em;color:#5E636B;margin-bottom:14px">{{ h.k }}</div>
+            <div style="font-size:clamp(30px,3vw,42px);font-weight:800;letter-spacing:-0.03em;line-height:1">{{ h.v }}<span style="font-size:16px;font-weight:600;color:#54585F"> {{ h.u }}</span></div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.12em;color:#5E636B;padding:10px 0 18px">L560 DESIGN PARAMETERS · CONSOLES RUN ON SIMULATED TRAFFIC</div>
+    </div>
+  </section>
+
+  <section id="suite" style="padding:88px 28px;border-bottom:1px solid #D6D6D2">
+    <div style="max-width:1240px;margin:0 auto">
+      <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:48px">
+        <div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.16em;color:#C33A27;margin-bottom:16px">01 / THE SUITE</div>
+          <h2 style="margin:0;font-size:clamp(30px,3.6vw,52px);line-height:1.02;font-weight:800;letter-spacing:-0.03em;max-width:20ch">Four products. Separate consoles, shared truth.</h2>
+        </div>
+        <p style="margin:0;max-width:44ch;font-size:16px;line-height:1.55;color:#3C4046;text-wrap:pretty">Each console is a working system an operator signs into. They pass state between them: a sealed pod in Ground releases a flight in Air; an hours limit in Maintenance withdraws an aircraft from Roster.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1px;background:#D6D6D2;border:1px solid #D6D6D2">
+        <sc-for list="{{ products }}" as="p" hint-placeholder-count="4">
+          <div style="background:#F4F4F2;padding:32px 28px 34px;display:flex;flex-direction:column;gap:15px;min-height:330px">
+            <div style="display:flex;align-items:center;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.14em;color:#5E636B">
+              <span>{{ p.num }}</span>
+              <span style="{{ p.tagStyle }}">{{ p.tag }}</span>
+            </div>
+            <h3 style="margin:0;font-size:27px;font-weight:800;letter-spacing:-0.025em;line-height:1.05">{{ p.name }}</h3>
+            <p style="margin:0;font-size:14.5px;line-height:1.55;color:#3C4046;text-wrap:pretty">{{ p.blurb }}</p>
+            <div style="display:flex;flex-direction:column;gap:7px;padding-top:4px">
+              <sc-for list="{{ p.bullets }}" as="b" hint-placeholder-count="4">
+                <div style="display:flex;gap:10px;font-family:'JetBrains Mono',monospace;font-size:10.5px;line-height:1.5;letter-spacing:0.04em;color:#3C4046">
+                  <span style="color:#C33A27">—</span>{{ b }}
+                </div>
+              </sc-for>
+            </div>
+            <a href="{{ p.href }}" style="{{ p.linkStyle }}">OPEN {{ p.short }} CONSOLE →</a>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <section id="flow" style="background:#101216;color:#E9EAEC;padding:84px 28px;border-bottom:1px solid #D6D6D2">
+    <div style="max-width:1240px;margin:0 auto">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.16em;color:#FF8874;margin-bottom:16px">02 / HOW IT CONNECTS</div>
+      <h2 style="margin:0 0 14px;font-size:clamp(30px,3.6vw,52px);line-height:1.02;font-weight:800;letter-spacing:-0.03em;max-width:22ch">One cargo request, four systems, no re-keying.</h2>
+      <p style="margin:0 0 44px;max-width:58ch;font-size:16px;line-height:1.55;color:#9BA1AA;text-wrap:pretty">A single request moves through the suite as one record. Each console owns its phase and hands off the state the next one needs.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1px">
+        <sc-for list="{{ flow }}" as="f" hint-placeholder-count="5">
+          <div style="background:#14171C;border:1px solid #262A31;padding:26px 24px 30px;display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:center;gap:10px">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.12em;color:#939BA5">{{ f.step }}</span>
+              <span style="{{ f.pillStyle }}">{{ f.owner }}</span>
+            </div>
+            <h3 style="margin:0;font-size:17px;font-weight:700;letter-spacing:-0.01em;line-height:1.2">{{ f.name }}</h3>
+            <p style="margin:0;font-size:13.5px;line-height:1.55;color:#C8CDD4;text-wrap:pretty">{{ f.blurb }}</p>
+            <div style="margin-top:auto;padding-top:12px;border-top:1px solid #262A31;font-family:'JetBrains Mono',monospace;font-size:9.5px;line-height:1.6;letter-spacing:0.06em;color:#939BA5">HANDS OFF → {{ f.next }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <section id="platform" style="padding:88px 28px;border-bottom:1px solid #D6D6D2">
+    <div style="max-width:1240px;margin:0 auto">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.16em;color:#C33A27;margin-bottom:16px">03 / PLATFORM</div>
+      <h2 style="margin:0 0 48px;font-size:clamp(30px,3.6vw,52px);line-height:1.02;font-weight:800;letter-spacing:-0.03em;max-width:24ch">Built around the corridor, not around open airspace.</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1px;background:#D6D6D2;border:1px solid #D6D6D2">
+        <sc-for list="{{ specs }}" as="p" hint-placeholder-count="6">
+          <div style="background:#F4F4F2;padding:28px 24px 32px">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
+              <div style="width:26px;height:26px;border:1px solid #1A1C1F;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:10px">{{ p.i }}</div>
+              <div style="flex:1;height:1px;background:#D6D6D2"></div>
+            </div>
+            <h3 style="margin:0 0 10px;font-size:18px;font-weight:800;letter-spacing:-0.015em;line-height:1.2">{{ p.name }}</h3>
+            <p style="margin:0;font-size:14px;line-height:1.55;color:#3C4046;text-wrap:pretty">{{ p.blurb }}</p>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <section id="who" style="padding:88px 28px;border-bottom:1px solid #D6D6D2">
+    <div style="max-width:1240px;margin:0 auto">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.16em;color:#C33A27;margin-bottom:16px">04 / WHO IT'S FOR</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:40px 48px;margin-top:36px">
+        <sc-for list="{{ audiences }}" as="a" hint-placeholder-count="4">
+          <div style="border-top:2px solid #1A1C1F;padding-top:20px">
+            <h3 style="margin:0 0 8px;font-size:21px;font-weight:800;letter-spacing:-0.02em;line-height:1.15">{{ a.name }}</h3>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.1em;color:#C33A27;margin-bottom:14px">{{ a.tag }}</div>
+            <p style="margin:0;font-size:14.5px;line-height:1.6;color:#3C4046;text-wrap:pretty">{{ a.blurb }}</p>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" style="padding:88px 28px 96px;background:#1A1C1F;color:#F4F4F2">
+    <div style="max-width:1240px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:48px;align-items:end">
+      <div>
+        <h2 style="margin:0;font-size:clamp(30px,4vw,58px);line-height:1;font-weight:800;letter-spacing:-0.035em;max-width:18ch">Walk the consoles on your own corridor.</h2>
+        <p style="margin:22px 0 0;max-width:46ch;font-size:16px;line-height:1.55;color:#A7ABB1;text-wrap:pretty">Send us a route and we will build the surveyed corridor, the ODD and the operating picture against it.</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;align-items:flex-start">
+        <a href="#contact" style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.08em;color:#101216;background:#E8523F;padding:16px 30px;border-radius:2px;white-space:nowrap;flex:0 0 auto">REQUEST A WALKTHROUGH</a>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;color:#939BA5;line-height:2">info@logixair.com<br>www.logixair.com</div>
+      </div>
+    </div>
+    <div style="max-width:1240px;margin:64px auto 0;padding-top:24px;border-top:1px solid #33373D;display:flex;flex-wrap:wrap;gap:10px 20px;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.1em">
+      <a href="Vector Ground.dc.html" style="color:#939BA5">VECTOR GROUND</a>
+      <a href="Vector Air.dc.html" style="color:#939BA5">VECTOR AIR</a>
+      <a href="Vector Maintenance.dc.html" style="color:#939BA5">VECTOR MAINTENANCE</a>
+      <a href="Vector Roster.dc.html" style="color:#939BA5">VECTOR ROSTER</a>
+    </div>
+    <div style="max-width:1240px;margin:18px auto 0;display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.1em;color:#939BA5">
+      <span>LOGIXAIR VECTOR · L560 GROUND SEGMENT</span>
+      <span>OVERWRITE ROBOTICS PVT LTD · HYDERABAD &amp; ENSCHEDE</span>
+      <span>CONFIDENTIAL</span>
+    </div>
+  </section>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showGrid&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Layout&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const mono = "font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.1em;";
+    const products = [
+      { num: '01', tag: 'GROUND', short: 'GROUND', color: '#15704B', name: 'Vector Ground', href: 'Vector Ground.dc.html',
+        blurb: 'Everything that happens once the aircraft is on the pad. Turnaround bays, pod exchange, payload verification and the IoT record that travels with the pod.',
+        bullets: ['Bay state and turnaround clock', 'Pod swap, seal and access control', 'IoT: internal temp, shock, battery', 'Release handshake to Vector Air'] },
+      { num: '02', tag: 'AIR', short: 'AIR', color: '#C33A27', name: 'Vector Air', href: 'Vector Air.dc.html',
+        blurb: 'Live corridor operations. Multiple aircraft on shared routes, vertical and longitudinal separation enforced continuously, and resolution options the supervisor chooses from.',
+        bullets: ['Multi-aircraft, multi-route traffic picture', 'Corridor density and altitude stack', '200 ft vertical / 3.0 km longitudinal minima', 'Conflict resolution the operator selects'] },
+      { num: '03', tag: 'MAINTENANCE', short: 'MAINTENANCE', color: '#6E520B', name: 'Vector Maintenance', href: 'Vector Maintenance.dc.html',
+        blurb: 'Component life across the fleet, hub capability and capacity, and the routing decision when an aircraft has to come out of the network.',
+        bullets: ['Remaining life per component', 'Hub capability, slots and queue', 'Ferry-versus-hold routing decision', 'Withdraws aircraft from the roster'] },
+      { num: '04', tag: 'ROSTER', short: 'ROSTER', color: '#7B4FA8', name: 'Vector Roster', href: 'Vector Roster.dc.html',
+        blurb: 'Cargo demand on one side, available aircraft and their nearest hub on the other. Assign, check pilot cover, publish the wave.',
+        bullets: ['Open requests with lane and window', 'Nearest available aircraft with fit reason', 'Supervisory pilot cover and span', 'Publishes to Ground and Air'] }
+    ].map(p => Object.assign({}, p, {
+      tagStyle: 'color:' + p.color,
+      linkStyle: 'align-self:flex-start;margin-top:auto;' + mono + 'font-size:11px;color:#F4F4F2;background:#1A1C1F;padding:11px 16px;border-radius:2px;white-space:nowrap'
+    }));
+
+    const flow = [
+      { step: 'STEP 1', owner: 'ROSTER', color: '#C08CF0', name: 'Demand meets aircraft', next: 'GROUND · aircraft and pod type',
+        blurb: 'A cargo request is matched to the nearest available aircraft with the right pod and enough maintenance margin. The wave is published.' },
+      { step: 'STEP 2', owner: 'GROUND', color: '#3DDC97', name: 'Pod loaded and sealed', next: 'AIR · release clearance',
+        blurb: 'The pod is fitted, the payload verified against the manifest, the seal closed and the IoT record opened. Cold chain must reach setpoint before release.' },
+      { step: 'STEP 3', owner: 'AIR', color: '#FF8874', name: 'Corridor operation', next: 'MAINTENANCE · flight hours',
+        blurb: 'The leg flies the certified corridor under a supervisory pilot. Separation is held against the traffic already on that route.' },
+      { step: 'STEP 4', owner: 'GROUND', color: '#3DDC97', name: 'Arrival and recovery', next: 'ROSTER · aircraft available again',
+        blurb: 'Pod is opened against an access grant at the destination, the chain-of-custody record closes, and the bay is turned for the next leg.' },
+      { step: 'STEP 5', owner: 'MAINTENANCE', color: '#FAC83C', name: 'Life consumed', next: 'ROSTER · availability updated',
+        blurb: 'Flight hours are debited from every component. When an aircraft crosses a limit it is withdrawn from future waves and routed to a capable hub.' }
+    ].map(f => Object.assign({}, f, {
+      pillStyle: "font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.1em;padding:2px 7px;border:1px solid " + f.color + ';color:' + f.color
+    }));
+
+    return {
+      showGrid: this.props.showGrid !== false,
+      heroStats: [
+        { k: 'PAYLOAD', v: '300', u: 'kg' },
+        { k: 'RANGE', v: '600', u: 'km' },
+        { k: 'OPERATING BAND', v: '2,200', u: 'ft AGL' },
+        { k: 'FOOTPRINT', v: '7×5', u: 'm' },
+        { k: 'CONTAINMENT', v: '±500', u: 'm' }
+      ],
+      products, flow,
+      specs: [
+        { i: '01', name: 'The corridor is the unit of approval', blurb: 'Each route is a certified Operational Design Domain — centreline, ±500 m box, altitude band, contingency areas. Approved once, flown continuously.' },
+        { i: '02', name: 'Conspicuity above the Class G baseline', blurb: 'Continuous ADS-B Out on an AIP-published corridor gives other traffic more real-time awareness than a NOTAM, without a per-flight filing.' },
+        { i: '03', name: 'Separation as a standing rule', blurb: 'Aircraft sharing a corridor hold 200 ft vertically and 3.0 km longitudinally. The stack is assigned on release and enforced continuously in Vector Air.' },
+        { i: '04', name: 'Dual-link C2, deterministic lost-link', blurb: 'Ground network primary with automatic station handoff, SATCOM backup for critical commands, and a frozen lost-link procedure behind both.' },
+        { i: '05', name: 'Human on the loop', blurb: 'One supervisory pilot monitors several aircraft and chooses the resolution when a conflict appears. Currently the most regulator-accepted autonomy model.' },
+        { i: '06', name: 'Auditable by construction', blurb: 'Every release, seal, advisory and maintenance decision carries who issued it and when — the evidence base the certification package is built from.' }
+      ],
+      audiences: [
+        { name: 'Fleet operators', tag: 'DISPATCH & FLIGHT FOLLOWING', blurb: 'Run defence, offshore and middle-mile legs from four consoles that already talk to each other. No spreadsheet between the pod and the aircraft.' },
+        { name: 'DGCA & regulators', tag: 'OVERSIGHT & EVIDENCE', blurb: 'See operations against the approved ODD before they are flown, with the audit trail and encounter log that feed the certification package.' },
+        { name: 'Site & infrastructure partners', tag: 'YARDS, PADS & GROUND OPS', blurb: 'Coordinate pickup yards, warehouse pads and bay swaps against the same schedule the aircraft are flying. No new infrastructure required.' },
+        { name: 'Investors', tag: 'PLATFORM & ROADMAP', blurb: 'The ground segment that turns one certified corridor into a repeatable network, and the operational data that shortens every certification after the first.' }
+      ]
+    };
+  }
+}
+
+</script>
+</body>
+</html>

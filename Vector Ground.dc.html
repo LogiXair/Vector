@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="vector-core.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #0B0D10; }
+  body { font-family: Archivo, Helvetica, sans-serif; -webkit-font-smoothing: antialiased; }
+  a { color: #3DDC97; text-decoration: none; }
+  a:hover { color: #E9EAEC; }
+  @keyframes vPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.2; } }
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:#0B0D10;color:#E9EAEC;display:flex;flex-direction:column">
+
+  <header style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 20px;padding:11px 18px;background:#14171C;border-bottom:1px solid #262A31">
+    <div style="display:flex;align-items:center;gap:14px">
+      <a href="Logixair Vector.dc.html" style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;color:#939BA5">← LOGIXAIR</a>
+      <div style="display:flex;align-items:baseline;gap:9px">
+        <span style="font-size:15px;font-weight:800;letter-spacing:-0.01em">VECTOR</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.18em;color:#3DDC97">GROUND</span>
+      </div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em">
+      <span style="color:#101216;background:#3DDC97;padding:6px 11px">GROUND</span>
+      <a href="Vector Air.dc.html" style="{{ navAir }}">AIR<sc-if value="{{ airBadge }}" hint-placeholder-val="{{ false }}"><span style="color:#FF8874"> ●</span></sc-if></a>
+      <a href="Vector Maintenance.dc.html" style="color:#939BA5;border:1px solid #262A31;padding:6px 11px">MAINTENANCE</a>
+      <a href="Vector Roster.dc.html" style="{{ navRoster }}">ROSTER<sc-if value="{{ rosterBadge }}" hint-placeholder-val="{{ false }}"><span style="color:#C08CF0"> ●</span></sc-if></a>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em;color:#939BA5">
+      <span style="color:#E9EAEC">{{ clock }} IST</span>
+      <span style="{{ taskStyle }}">{{ taskCount }}</span>
+      <span style="color:#3DDC97">AI ORCHESTRATOR ACTIVE</span>
+    </div>
+  </header>
+
+  <div style="display:flex;flex-wrap:wrap;align-items:stretch;flex:1">
+
+    <div style="flex:1 1 330px;min-width:0;border-right:1px solid #262A31;background:#101216;padding:15px 16px">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:9px;margin-bottom:11px">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;color:#939BA5">GROUND TASK QUEUE</span>
+        <span style="{{ queueCountStyle }}">{{ queueCount }}</span>
+      </div>
+
+      <sc-if value="{{ hasTasks }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <sc-for list="{{ tasks }}" as="t" hint-placeholder-count="2">
+            <div style="{{ t.cardStyle }}">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.1em;color:{{ t.color }};margin-bottom:6px">FROM {{ t.from }} · {{ t.kind }}</div>
+              <div style="font-size:13.5px;font-weight:700;margin-bottom:5px">{{ t.title }}</div>
+              <div style="font-size:12px;line-height:1.5;color:#C8CDD4;margin-bottom:10px;text-wrap:pretty">{{ t.text }}</div>
+              <sc-if value="{{ t.steps }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:10px">
+                  <sc-for list="{{ t.checklist }}" as="c" hint-placeholder-count="3">
+                    <div style="display:flex;gap:8px;font-family:'JetBrains Mono',monospace;font-size:9.5px;line-height:1.5;letter-spacing:0.04em;color:{{ c.color }}">
+                      <span>{{ c.mark }}</span>{{ c.label }}
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+              <button type="button" onClick="{{ t.act }}" style="{{ t.btnStyle }}">{{ t.btnLabel }}</button>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+      <sc-if value="{{ noTasks }}" hint-placeholder-val="{{ false }}">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;line-height:1.7;letter-spacing:0.06em;color:#8A929C;padding:12px 13px;background:#181C22;border:1px solid #262A31">QUEUE CLEAR<br>Roster pushes preparation tasks here; Air pushes arrivals.</div>
+      </sc-if>
+
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;color:#939BA5;margin:22px 0 11px">ORCHESTRATOR LOG</div>
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <sc-for list="{{ feed }}" as="f" hint-placeholder-count="5">
+          <div style="display:flex;gap:9px;padding:7px 10px;background:#181C22;border-left:2px solid {{ f.c }}">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.08em;color:{{ f.c }};flex:0 0 50px">{{ f.src }}</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:9.5px;line-height:1.45;color:#C8CDD4">{{ f.text }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="flex:2 1 520px;min-width:0;display:flex;flex-direction:column">
+      <div style="padding:15px 18px;border-bottom:1px solid #262A31">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;color:#939BA5;margin-bottom:13px">HUB OCCUPANCY · AIRCRAFT ON THE GROUND</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px">
+          <sc-for list="{{ hubs }}" as="h" hint-placeholder-count="4">
+            <div style="{{ h.style }}">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:9px;margin-bottom:9px">
+                <span style="font-size:15px;font-weight:800;letter-spacing:-0.01em">{{ h.label }}</span>
+                <span style="{{ h.pillStyle }}">{{ h.type }}</span>
+              </div>
+              <div style="display:flex;align-items:baseline;gap:7px;margin-bottom:10px">
+                <span style="font-size:30px;font-weight:800;letter-spacing:-0.03em;color:{{ h.color }};line-height:1">{{ h.parked }}</span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#939BA5">/ {{ h.cap }} STANDS</span>
+              </div>
+              <div style="height:4px;background:#22262C;position:relative;overflow:hidden">
+                <div style="{{ h.barStyle }}"></div>
+              </div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:9px;line-height:1.7;letter-spacing:0.06em;color:#868E99;margin-top:8px">{{ h.list }}<br>{{ h.inbound }}</div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="margin-top:11px;padding:12px 14px;background:#181C22;border:1px solid #262A31;border-left:2px solid #FF8874">
+          <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:7px 12px">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.12em;color:#FF8874">OFF-STAND · {{ mro.label }}</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.06em;color:#939BA5;margin-left:auto;white-space:nowrap">{{ mro.slots }}</span>
+          </div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:9px;line-height:1.8;letter-spacing:0.06em;color:#868E99;margin-top:7px">{{ mro.holding }}<br>{{ mro.ferry }}</div>
+        </div>
+      </div>
+
+      <div style="padding:15px 18px;flex:1">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;color:#939BA5;margin-bottom:13px">POD INVENTORY · IoT TELEMETRY</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <sc-for list="{{ pods }}" as="p" hint-placeholder-count="7">
+            <button type="button" onClick="{{ p.select }}" style="{{ p.rowStyle }}">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:#E9EAEC;flex:0 0 66px;text-align:left">{{ p.id }}</span>
+              <span style="{{ p.typeStyle }}">{{ p.type }}</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#C8CDD4;flex:1 1 96px;text-align:left">{{ p.payload }}</span>
+              <span style="{{ p.tempStyle }}">{{ p.temp }}</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#868E99;flex:0 0 92px;text-align:right">{{ p.loc }}</span>
+              <span style="{{ p.sealStyle }}">{{ p.seal }}</span>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+    <div style="flex:1 1 300px;min-width:0;border-left:1px solid #262A31;background:#101216;display:flex;flex-direction:column">
+      <div style="padding:15px;border-bottom:1px solid #262A31">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;color:#939BA5;margin-bottom:11px">POD DETAIL</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:9px;margin-bottom:12px">
+          <span style="font-size:20px;font-weight:800;letter-spacing:-0.02em">{{ pod.id }}</span>
+          <span style="{{ pod.stateStyle }}">{{ pod.state }}</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:5px">
+          <sc-for list="{{ pod.rows }}" as="r" hint-placeholder-count="7">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 11px;background:#181C22;border:1px solid #262A31">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.08em;color:#939BA5">{{ r.k }}</span>
+              <span style="{{ r.vStyle }}">{{ r.v }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px">
+          <sc-for list="{{ podActions }}" as="a" hint-placeholder-count="2">
+            <button type="button" onClick="{{ a.run }}" style="{{ a.style }}">{{ a.label }}</button>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="padding:15px;flex:1">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;color:#939BA5;margin-bottom:10px">ACCESS LOG</div>
+        <div style="display:flex;flex-direction:column;gap:5px">
+          <sc-for list="{{ access }}" as="a" hint-placeholder-count="4">
+            <div style="display:flex;gap:9px;padding:7px 10px;background:#181C22;border-left:2px solid {{ a.color }}">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#868E99;flex:0 0 36px">{{ a.t }}</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:9.5px;line-height:1.45;color:#C8CDD4">{{ a.text }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.1em;color:#8A929C;margin-top:14px;line-height:1.8">VECTOR GROUND v1.0<br>AI ORCHESTRATED, HUMAN SUPERVISED</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  state = { pod: null, tick: 0, prepped: {} };
+
+  PODMETA = {
+    'CC-114': { type: 'COLD CHAIN', temp: 2.4 },
+    'DR-208': { type: 'DRY', temp: null },
+    'CC-077': { type: 'COLD CHAIN', temp: 7.9 },
+    'DR-341': { type: 'DRY', temp: null },
+    'DR-512': { type: 'DRY', temp: null },
+    'CC-190': { type: 'COLD CHAIN', temp: 3.1 },
+    'DR-006': { type: 'DRY', temp: null }
+  };
+
+  componentDidMount() {
+    this.C = window.VectorCore;
+    this.s = this.C.load();
+    this.lastT = Date.now();
+    this.timer = setInterval(() => {
+      this.s = this.C.load();
+      this.C.runClock('GROUND', this.s, this.lastT);
+      this.lastT = Date.now();
+      this.setState(st => ({ tick: st.tick + 1 }));
+    }, 900);
+    this.onStorage = e => { if (e.key === this.C.KEY) { this.s = this.C.load(); this.forceUpdate(); } };
+    window.addEventListener('storage', this.onStorage);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timer);
+    window.removeEventListener('storage', this.onStorage);
+  }
+
+  commit(fn) { fn(); this.C.save(this.s); this.forceUpdate(); }
+
+  renderVals() {
+    const C = this.C, s = this.s;
+    if (!C || !s) return {};
+    const mono = "font-family:'JetBrains Mono',monospace;font-size:10.5px;";
+    const ok = mono + 'color:#3DDC97', bad = mono + 'color:#FF8874', warn = mono + 'color:#FAC83C', neu = mono + 'color:#E9EAEC';
+
+    const pending = C.zInbox(s, 'GROUND').filter(n => n.state === 'PENDING');
+    const prepped = this.state.prepped;
+
+    const tasks = pending.map(n => {
+      const isTask = n.kind === 'TASK';
+      const d = isTask ? s.demands.find(x => x.id === n.payload.demand) : null;
+      const a = s.fleet.find(x => x.cs === n.payload.cs);
+      const cold = d && d.type === 'COLD CHAIN';
+      const podCold = a && a.pod && a.pod.indexOf('CC') === 0;
+      const needsSwap = cold && !podCold;
+      const done = prepped[n.id];
+      const checklist = isTask ? [
+        { label: 'Aircraft on stand at ' + (d ? d.from : ''), okc: !!(a && a.at) },
+        { label: needsSwap ? 'Pod swap to cold chain required' : 'Correct pod fitted (' + (a ? a.pod : '') + ')', okc: !needsSwap || done },
+        { label: 'Payload verified against manifest · ' + (d ? d.kg + ' kg' : ''), okc: !!done },
+        { label: 'Seal closed, IoT record opened', okc: !!done }
+      ].map(c => ({ label: c.label, mark: c.okc ? '✓' : '○', color: c.okc ? '#3DDC97' : '#868E99' })) : [];
+      const ready = isTask && done;
+
+      return {
+        from: isTask ? 'ROSTER' : 'AIR', kind: n.kind, title: n.title, text: n.text,
+        color: isTask ? '#C08CF0' : '#3DDC97',
+        steps: isTask, checklist,
+        cardStyle: 'padding:12px 13px;background:#181C22;border:1px solid ' + (isTask ? '#3A2F4A' : '#26382E') +
+          ';border-left:2px solid ' + (isTask ? '#C08CF0' : '#3DDC97'),
+        btnLabel: isTask
+          ? (ready ? 'RELEASE TO AIR →' : 'PREPARE POD & LOAD')
+          : 'CONFIRM POD RECOVERY',
+        btnStyle: 'width:100%;font-family:\'JetBrains Mono\',monospace;font-size:10.5px;letter-spacing:0.08em;padding:10px 0;cursor:pointer;border:' +
+          (ready || !isTask ? '0' : '1px solid #3A404A') + ';background:' + (ready ? '#3DDC97' : (!isTask ? '#3DDC97' : 'transparent')) +
+          ';color:' + (ready || !isTask ? '#101216' : '#C8CDD4'),
+        act: () => this.commit(() => {
+          if (!isTask) {
+            n.state = 'ACCEPTED';
+            C.log(s, 'GROUND', n.payload.cs + ' pod recovered at ' + n.payload.hub + ' · chain of custody closed', '#3DDC97');
+            return;
+          }
+          if (!done) {
+            this.setState(st => ({ prepped: Object.assign({}, st.prepped, { [n.id]: true }) }));
+            C.log(s, 'GROUND', n.payload.cs + ' pod prepared and sealed for ' + n.payload.demand, '#3DDC97');
+          } else {
+            C.release(s, n.payload.cs, n.payload.demand);
+            n.state = 'ACCEPTED';
+          }
+        })
+      };
+    });
+
+    /* airframes Ground has handed over: in the MRO hub or flying a positioning
+       leg to or from it. They hold no operational stand but stay accounted for. */
+    const mroHub = C.zMro(s);
+    const inMro = C.zFleet(s).filter(x => x.state === 'MAINT' && x.at === mroHub.id);
+    const posLegs = C.zFleet(s).filter(x => x.rev === false && x.state !== 'GROUND' && x.state !== 'MAINT');
+    const mro = {
+      label: mroHub.label,
+      slots: inMro.length + ' / ' + mroHub.slots + ' SLOTS',
+      holding: inMro.length
+        ? 'HOLDING: ' + inMro.slice(0, 4).map(x => x.cs.slice(4)).join(' ') +
+          (inMro.length > 4 ? ' +' + (inMro.length - 4) : '')
+        : 'LINE CLEAR',
+      ferry: posLegs.length
+        ? 'POSITIONING (NON-REVENUE): ' + posLegs.slice(0, 4).map(x => x.cs.slice(4) + '→' + x.dest).join(' ')
+        : 'NO POSITIONING LEGS IN THE AIR'
+    };
+
+    const hubs = C.zHubs(s).map(h => {
+      const o = C.occupancy(s, h.id);
+      const over = o.parked > h.cap, full = o.parked >= h.cap;
+      const col = over ? '#FF8874' : (full ? '#FAC83C' : '#3DDC97');
+      const here = C.zFleet(s).filter(a => a.at === h.id).map(a => a.cs.slice(4));
+      const inb = C.zFleet(s).filter(a => a.dest === h.id && a.state !== 'GROUND').map(a => a.cs.slice(4));
+      return {
+        label: h.label, type: h.type, cap: h.cap, parked: o.parked, color: col,
+        list: here.length ? 'ON STAND: ' + here.join(' · ') : 'NO AIRCRAFT ON STAND',
+        inbound: inb.length ? 'INBOUND: ' + inb.join(' · ') : 'NO INBOUND',
+        style: 'background:#181C22;border:1px solid #262A31;border-top:2px solid ' + col + ';padding:14px 15px',
+        pillStyle: "font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.08em;padding:2px 7px;border:1px solid " +
+          (h.type === 'BASE' ? '#E9EAEC' : '#868E99') + ';color:' + (h.type === 'BASE' ? '#E9EAEC' : '#939BA5'),
+        barStyle: 'position:absolute;left:0;top:0;bottom:0;width:' + Math.min(100, o.parked / h.cap * 100) + '%;background:' + col
+      };
+    });
+
+    const podOwner = id => s.fleet.find(a => a.pod === id);
+    const podIds = Object.keys(this.PODMETA);
+    const selPod = this.state.pod || podIds[0];
+
+    const pods = podIds.map(id => {
+      const m = this.PODMETA[id], a = podOwner(id), on = id === selPod;
+      const loc = a ? (a.at ? (C.hub(a.at) || {}).label : a.cs + ' · airborne') : 'STORE';
+      const seal = a && a.kg ? 'SEALED' : (a ? 'FITTED' : 'STORE');
+      const tempOk = m.temp === null || m.temp <= 8;
+      const sc = seal === 'SEALED' ? '#3DDC97' : (seal === 'FITTED' ? '#78AAFF' : '#5B636E');
+      return {
+        id, type: m.type, payload: a && a.kg ? a.kg + ' kg' : '—',
+        temp: m.temp === null ? '—' : m.temp + ' °C', loc, seal,
+        select: () => this.setState({ pod: id }),
+        rowStyle: 'display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;width:100%;background:' + (on ? '#1B2027' : '#181C22') +
+          ';border:1px solid ' + (on ? '#3A424E' : '#262A31') + ';padding:9px 11px;cursor:pointer',
+        typeStyle: "font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.08em;padding:1px 6px;flex:0 0 auto;border:1px solid " +
+          (m.type === 'COLD CHAIN' ? '#78AAFF' : '#5B636E') + ';color:' + (m.type === 'COLD CHAIN' ? '#78AAFF' : '#939BA5'),
+        tempStyle: "font-family:'JetBrains Mono',monospace;font-size:10px;flex:0 0 54px;text-align:right;color:" + (tempOk ? '#C8CDD4' : '#FF8874'),
+        sealStyle: "font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.08em;padding:1px 6px;flex:0 0 60px;text-align:center;border:1px solid " + sc + ';color:' + sc
+      };
+    });
+
+    const pm = this.PODMETA[selPod], owner = podOwner(selPod);
+    const podState = owner && owner.kg ? 'SEALED' : (owner ? 'FITTED' : 'IN STORE');
+    const psc = podState === 'SEALED' ? '#3DDC97' : (podState === 'FITTED' ? '#78AAFF' : '#5B636E');
+    const podRows = [
+      { k: 'TYPE', v: pm.type, s: neu },
+      { k: 'INTERNAL TEMP', v: pm.temp === null ? 'AMBIENT' : pm.temp + ' °C', s: pm.temp === null || pm.temp <= 8 ? ok : bad },
+      { k: 'SETPOINT', v: pm.type === 'COLD CHAIN' ? '2–8 °C' : 'AMBIENT', s: neu },
+      { k: 'SHOCK EVENTS', v: selPod === 'CC-077' ? '1 · 3.2 g' : '0', s: selPod === 'CC-077' ? warn : ok },
+      { k: 'BATTERY', v: '84 %', s: ok },
+      { k: 'FITTED TO', v: owner ? owner.cs : 'NONE', s: neu },
+      { k: 'LOCATION', v: owner ? (owner.at ? (C.hub(owner.at) || {}).label : 'AIRBORNE') : 'STORE', s: neu }
+    ].map(r => ({ k: r.k, v: r.v, vStyle: r.s }));
+
+    const act = (label, run, primary) => ({
+      label, run,
+      style: "font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.08em;padding:9px 12px;cursor:pointer;border:1px solid " +
+        (primary ? '#3DDC97' : '#3A404A') + ';background:' + (primary ? '#3DDC97' : 'transparent') + ';color:' + (primary ? '#101216' : '#C8CDD4')
+    });
+    const podActions = [
+      act('GRANT ACCESS', () => this.commit(() => C.log(s, 'GROUND', selPod + ' access granted · badge 4471', '#3DDC97')), true),
+      act('LOG INSPECTION', () => this.commit(() => C.log(s, 'GROUND', selPod + ' inspected · seal intact', '#939BA5')))
+    ];
+
+    const airPending = C.zInbox(s, 'AIR').filter(n => n.state === 'PENDING').length;
+    const rosterPending = C.zInbox(s, 'ROSTER').filter(n => n.state === 'PENDING').length;
+    const navA = b => 'color:#939BA5;border:1px solid ' + b + ';padding:6px 11px';
+    const hh = 4 + Math.floor(s.t / 430), mm = (12 + Math.floor(s.t / 7)) % 60;
+
+    return {
+      clock: String(hh % 24).padStart(2, '0') + ':' + String(mm).padStart(2, '0'),
+      taskCount: pending.length ? pending.length + ' TASKS' : 'QUEUE CLEAR',
+      taskStyle: 'color:' + (pending.length ? '#FAC83C' : '#3DDC97'),
+      navAir: navA(airPending ? '#5C2A26' : '#262A31'),
+      navRoster: navA(rosterPending ? '#4A3560' : '#262A31'),
+      airBadge: airPending > 0, rosterBadge: rosterPending > 0,
+      tasks, hasTasks: tasks.length > 0, noTasks: tasks.length === 0,
+      queueCount: pending.length ? pending.length + ' PENDING' : 'CLEAR',
+      queueCountStyle: "font-family:'JetBrains Mono',monospace;font-size:9.5px;padding:1px 7px;border:1px solid " +
+        (pending.length ? '#FAC83C' : '#3A404A') + ';color:' + (pending.length ? '#FAC83C' : '#8A929C'),
+      hubs, pods, mro,
+      pod: {
+        id: selPod, state: podState, rows: podRows,
+        stateStyle: "font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.08em;padding:2px 8px;border:1px solid " + psc + ';color:' + psc
+      },
+      podActions,
+      feed: s.log.slice(0, 6),
+      access: [
+        { t: '04:02', text: 'CC-114 sealed by R. Iyer · badge 4471', color: '#3DDC97' },
+        { t: '03:58', text: 'CC-077 temp excursion logged 7.9 °C at BAY-2', color: '#FF8874' },
+        { t: '03:51', text: 'DR-512 payload secured · verified against manifest', color: '#78AAFF' },
+        { t: '03:44', text: 'DR-208 released to Vector Air', color: '#3DDC97' }
+      ]
+    };
+  }
+}
+
+</script>
+</body>
+</html>

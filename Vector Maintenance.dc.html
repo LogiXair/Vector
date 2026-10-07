@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<script src="vector-core.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #0B0D10; }
+  body { font-family: Archivo, Helvetica, sans-serif; -webkit-font-smoothing: antialiased; }
+  a { color: #FAC83C; text-decoration: none; }
+  a:hover { color: #E9EAEC; }
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:#0B0D10;color:#E9EAEC;display:flex;flex-direction:column">
+
+  <header style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 20px;padding:11px 18px;background:#14171C;border-bottom:1px solid #262A31">
+    <div style="display:flex;align-items:center;gap:14px">
+      <a href="Logixair Vector.dc.html" style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;color:#939BA5">← LOGIXAIR</a>
+      <div style="display:flex;align-items:baseline;gap:9px">
+        <span style="font-size:15px;font-weight:800;letter-spacing:-0.01em">VECTOR</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.18em;color:#FAC83C">MAINTENANCE</span>
+      </div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em">
+      <a href="Vector Ground.dc.html" style="color:#939BA5;border:1px solid #262A31;padding:6px 11px">GROUND</a>
+      <a href="Vector Air.dc.html" style="color:#939BA5;border:1px solid #262A31;padding:6px 11px">AIR</a>
+      <span style="color:#101216;background:#FAC83C;padding:6px 11px">MAINTENANCE</span>
+      <a href="Vector Roster.dc.html" style="color:#939BA5;border:1px solid #262A31;padding:6px 11px">ROSTER</a>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em;color:#939BA5">
+      <span style="color:#E9EAEC">{{ zoneLabel }} · FLEET {{ fleetCount }}</span>
+      <span style="{{ dueStyle }}">{{ dueCount }} DUE ≤ 50 h</span>
+      <span>{{ mroLabel }}</span>
+      <span style="color:#78AAFF">{{ clockLabel }}</span>
+    </div>
+  </header>
+
+  <div style="display:flex;flex-wrap:wrap;align-items:stretch;flex:1">
+
+    <div style="flex:2 1 520px;min-width:0;border-right:1px solid #262A31;display:flex;flex-direction:column">
+      <div style="padding:15px 18px;border-bottom:1px solid #262A31">
+        <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:13px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;color:#939BA5">FLEET · REMAINING LIFE TO NEXT SCHEDULED EVENT</div>
+          <div style="display:flex;gap:6px">
+            <sc-for list="{{ sorts }}" as="s" hint-placeholder-count="2">
+              <button type="button" onClick="{{ s.select }}" style="{{ s.style }}">{{ s.label }}</button>
+            </sc-for>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <sc-for list="{{ fleet }}" as="a" hint-placeholder-count="8">
+            <button type="button" onClick="{{ a.select }}" style="{{ a.rowStyle }}">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:#E9EAEC;flex:0 0 74px;text-align:left">{{ a.cs }}</span>
+              <span style="{{ a.statusStyle }}">{{ a.status }}</span>
+              <div style="flex:1 1 150px;min-width:90px;height:5px;background:#22262C;position:relative;overflow:hidden">
+                <div style="{{ a.barStyle }}"></div>
+              </div>
+              <span style="{{ a.hoursStyle }}">{{ a.hours }}</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#868E99;flex:0 0 110px;text-align:right">{{ a.item }}</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#939BA5;flex:0 0 62px;text-align:right">{{ a.loc }}</span>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="padding:15px 18px;flex:1">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;color:#939BA5;margin-bottom:13px">MAINTENANCE HUBS · CAPACITY</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px">
+          <sc-for list="{{ hubs }}" as="h" hint-placeholder-count="3">
+            <div style="{{ h.style }}">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:9px;margin-bottom:10px">
+                <span style="font-size:15px;font-weight:800;letter-spacing:-0.01em">{{ h.id }}</span>
+                <span style="{{ h.pillStyle }}">{{ h.slots }}</span>
+              </div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.08em;color:#939BA5;margin-bottom:11px">{{ h.caps }}</div>
+              <div style="height:4px;background:#22262C;position:relative;overflow:hidden">
+                <div style="{{ h.barStyle }}"></div>
+              </div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.08em;color:#868E99;margin-top:8px">{{ h.queue }}</div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:9px;margin:22px 0 11px">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;color:#939BA5">IN THE HUB · HOLDING A SLOT UNTIL RELEASED</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.08em;white-space:nowrap;color:#939BA5">{{ mroLabel }}</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:5px;max-height:300px;overflow-y:auto;padding-right:4px">
+          <sc-for list="{{ holding }}" as="x" hint-placeholder-count="3">
+            <button type="button" onClick="{{ x.sel }}" style="{{ x.rowStyle }}">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:#E9EAEC;flex:0 0 78px">{{ x.cs }}</span>
+              <span style="font-size:12.5px;color:#C8CDD4;flex:1 1 140px">{{ x.item }}</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.06em;color:#8A929C;flex:0 0 auto">{{ x.dwell }}</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.06em;color:#6E7682;flex:1 1 100%">{{ x.from }}</span>
+            </button>
+          </sc-for>
+        </div>
+        <sc-if value="{{ noHolding }}" hint-placeholder-val="{{ false }}">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;line-height:1.7;color:#8A929C;padding:11px 12px;background:#181C22;border:1px solid #262A31">LINE CLEAR · NO AIRFRAMES HOLDING A SLOT</div>
+        </sc-if>
+      </div>
+    </div>
+
+    <div style="flex:1 1 340px;min-width:0;background:#101216;display:flex;flex-direction:column">
+      <div style="padding:15px;border-bottom:1px solid #262A31">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:9px;margin-bottom:12px">
+          <span style="font-size:20px;font-weight:800;letter-spacing:-0.02em">{{ sel.cs }}</span>
+          <span style="{{ sel.stateStyle }}">{{ sel.status }}</span>
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;color:#939BA5;margin-bottom:10px">COMPONENT LIFE</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <sc-for list="{{ sel.parts }}" as="p" hint-placeholder-count="6">
+            <div style="padding:9px 11px;background:#181C22;border:1px solid #262A31;border-left:2px solid {{ p.color }}">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:9px;margin-bottom:6px">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#C8CDD4">{{ p.k }}</span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:{{ p.color }}">{{ p.v }}</span>
+              </div>
+              <div style="height:3px;background:#22262C;position:relative;overflow:hidden">
+                <div style="{{ p.barStyle }}"></div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="padding:15px;border-bottom:1px solid #262A31">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:9px;margin-bottom:10px">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;color:#939BA5">MAINTENANCE AUTHORITY</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#939BA5">{{ selFlown }}</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:7px">
+          <sc-for list="{{ authority }}" as="o" hint-placeholder-count="2">
+            <button type="button" onClick="{{ o.run }}" style="{{ o.btnStyle }}">
+              <div style="{{ o.labelStyle }}">{{ o.label }}</div>
+              <div style="font-size:12.5px;line-height:1.45;color:#C8CDD4;text-align:left;margin-top:5px">{{ o.text }}</div>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="padding:15px;border-bottom:1px solid #262A31">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;color:#939BA5;margin-bottom:10px">ROUTE TO HUB</div>
+        <div style="display:flex;flex-direction:column;gap:7px">
+          <sc-for list="{{ routeOptions }}" as="o" hint-placeholder-count="3">
+            <button type="button" onClick="{{ o.run }}" style="{{ o.btnStyle }}">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;color:{{ o.color }}">{{ o.k }}</span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.08em;color:#939BA5">{{ o.cost }}</span>
+              </div>
+              <div style="font-size:12.5px;line-height:1.45;color:#C8CDD4;text-align:left">{{ o.v }}</div>
+            </button>
+          </sc-for>
+        </div>
+        <sc-if value="{{ decided }}" hint-placeholder-val="{{ false }}">
+          <div style="{{ decisionStyle }}">{{ decisionText }}</div>
+        </sc-if>
+      </div>
+
+      <div style="padding:15px;flex:1">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;color:#939BA5;margin-bottom:10px">LIVE LOG · ALL FOUR CONSOLES</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <sc-for list="{{ handoffs }}" as="h" hint-placeholder-count="3">
+            <div style="display:flex;gap:9px;padding:8px 10px;background:#181C22;border-left:2px solid {{ h.color }}">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.08em;color:{{ h.color }};flex:0 0 52px">{{ h.src }}</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:9.5px;line-height:1.45;color:#C8CDD4">{{ h.text }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px">
+          <a href="Vector Roster.dc.html" style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em;color:#101216;background:#FAC83C;padding:10px 14px">OPEN ROSTER →</a>
+          <a href="Vector Air.dc.html" style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em;color:#C8CDD4;border:1px solid #3A404A;padding:10px 14px">VECTOR AIR</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  state = { sel: null, sort: 'DUE FIRST', decision: null, tick: 0 };
+  C = window.VectorCore;
+  s = window.VectorCore ? window.VectorCore.load() : null;
+
+  componentDidMount() {
+    this.lastT = Date.now();
+    this.timer = setInterval(() => {
+      this.s = this.C.load();
+      this.C.runClock('MAINT', this.s, this.lastT);
+      this.lastT = Date.now();
+      this.setState(st => ({ tick: st.tick + 1 }));
+    }, 900);
+  }
+  componentWillUnmount() { clearInterval(this.timer); }
+
+  ITEMS = ['ROTOR INSPECTION', 'BATTERY PACK B', 'TILT ACTUATOR', 'AIRFRAME 300 h', 'AVIONICS BAY', 'GENERATOR SET', 'PROP BLADE SET'];
+
+  /* hours come straight off the airframe: Air accrues them in flight */
+  liveFleet() {
+    const C = this.C, s = this.s;
+    return C.zFleet(s).map((a, i) => {
+      const n = parseInt(a.cs.slice(4), 10) || i;
+      const due = a.due || C.CHECK_H;
+      const h = Math.max(0, Math.round(due - (a.hrs || 0)));
+      const flying = a.state !== 'GROUND' && a.state !== 'MAINT';
+      const status = a.state === 'MAINT' ? 'GROUNDED'
+        : (a.mx === 'WITHDRAW' || a.mx === 'FERRY-IN') ? 'WITHDRAWN'
+        : a.mx === 'EXTENDED' ? 'EXTENDED'
+        : h <= 50 ? 'DUE SOON'
+        : flying ? 'AIRBORNE' : 'IN SERVICE';
+      return {
+        cs: a.cs, h, total: due, flown: Math.round(a.hrs || 0),
+        item: a.item || this.ITEMS[n % this.ITEMS.length],
+        loc: flying ? (a.dest ? '→ ' + a.dest : 'AIRBORNE') : (a.at || '—'),
+        status, mx: a.mx || 'IN SERVICE', grounded: a.state === 'MAINT'
+      };
+    });
+  }
+
+
+  renderVals() {
+    const mono = "font-family:'JetBrains Mono',monospace;font-size:10.5px;";
+    const ok = mono + 'color:#3DDC97', bad = mono + 'color:#FF8874', warn = mono + 'color:#FAC83C';
+    const colFor = h => h < 50 ? '#FF8874' : (h < 160 ? '#FAC83C' : '#3DDC97');
+
+    const C = this.C, s = this.s;
+    const FLEET = this.liveFleet();
+    const zone = C.zone(C.zid(s));
+    const sorted = FLEET.slice().sort((a, b) =>
+      this.state.sort === 'DUE FIRST' ? a.h - b.h : a.cs.localeCompare(b.cs));
+
+    const sorts = ['DUE FIRST', 'BY TAIL'].map(s => ({
+      label: s, select: () => this.setState({ sort: s }),
+      style: "font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.08em;padding:5px 10px;cursor:pointer;border:1px solid " +
+        (this.state.sort === s ? '#FAC83C' : '#2E343D') + ';background:transparent;color:' + (this.state.sort === s ? '#FAC83C' : '#939BA5')
+    }));
+
+    const fleet = sorted.map(a => {
+      const on = a.cs === this.state.sel, col = colFor(a.h);
+      const sc = (a.status === 'GROUNDED' || a.status === 'WITHDRAWN') ? '#FF8874'
+        : (a.status === 'DUE SOON' || a.status === 'EXTENDED') ? '#FAC83C'
+        : a.status === 'AIRBORNE' ? '#78AAFF' : '#3DDC97';
+      return {
+        cs: a.cs, status: a.status, item: a.item, loc: a.loc, hours: a.h + ' h',
+        select: () => this.setState({ sel: a.cs, decision: null }),
+        rowStyle: 'display:flex;flex-wrap:wrap;align-items:center;gap:8px 11px;width:100%;background:' + (on ? '#1B2027' : '#181C22') +
+          ';border:1px solid ' + (on ? '#3A424E' : '#262A31') + ';padding:10px 12px;cursor:pointer',
+        statusStyle: "font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.08em;padding:1px 6px;flex:0 0 auto;border:1px solid " + sc + ';color:' + sc,
+        barStyle: 'position:absolute;left:0;top:0;bottom:0;width:' + Math.round(a.h / a.total * 100) + '%;background:' + col,
+        hoursStyle: "font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;flex:0 0 52px;text-align:right;color:" + col
+      };
+    });
+
+    const grounded = FLEET.filter(x => x.status === 'GROUNDED');
+    const dueSoon = FLEET.filter(x => x.h <= 50);
+    const mro = C.zMro(s);
+    const inHub = C.zFleet(s).filter(x => x.state === 'MAINT' && x.at === mro.id);
+    const used = inHub.length, capN = mro.slots;
+    const pct = Math.round(used / capN * 100);
+    const MRO = [{
+      id: mro.label + ' · ' + mro.id,
+      color: pct > 80 ? '#FF8874' : (pct > 55 ? '#FAC83C' : '#3DDC97'),
+      caps: 'ROTOR · AVIONICS · AIRFRAME · BATTERY · CERTIFYING STAFF',
+      slots: used + ' / ' + capN + ' SLOTS',
+      pct,
+      queue: used
+        ? 'HOLDING: ' + inHub.slice(0, 3).map(x => x.cs).join(', ') + (used > 3 ? ' +' + (used - 3) + ' more' : '')
+        : 'LINE CLEAR · ALL SLOTS AVAILABLE'
+    }];
+
+    /* every airframe in the hub, accounted for: why it is here and how long */
+    const holding = inHub.map(x => ({
+      cs: x.cs,
+      item: x.item || 'SCHEDULED CHECK',
+      from: x.ferried ? 'ferried in from ' + x.ferried : 'withdrawn on stand',
+      dwell: x.mroT != null ? Math.round((s.t - x.mroT) / 60) + ' h in hub' : 'just arrived',
+      sel: () => this.setState({ sel: x.cs, decision: null }),
+      rowStyle: 'display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;width:100%;text-align:left;padding:9px 11px;cursor:pointer;background:' +
+        (x.cs === this.state.sel ? '#1E242C' : '#181C22') + ';border:1px solid ' +
+        (x.cs === this.state.sel ? '#3A424E' : '#262A31') + ';border-left:2px solid #FF8874'
+    }));
+
+    const hubs = MRO.map(h => ({
+      id: h.id, slots: h.slots, caps: h.caps, queue: h.queue,
+      style: 'background:#181C22;border:1px solid #262A31;border-top:2px solid ' + h.color + ';padding:14px 15px',
+      pillStyle: "font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.08em;padding:2px 7px;border:1px solid " + h.color + ';color:' + h.color,
+      barStyle: 'position:absolute;left:0;top:0;bottom:0;width:' + h.pct + '%;background:' + h.color
+    }));
+
+    const a = FLEET.find(x => x.cs === this.state.sel) || sorted[0] || { cs: '—', h: 0, total: 600, item: '—', loc: '—', status: 'IN SERVICE' };
+    const parts = [
+      { k: a.item, pct: Math.round(a.h / a.total * 100), v: a.h + ' h left of ' + a.total + ' h' },
+      { k: 'LIFT ROTORS', pct: 64, v: '384 h left' },
+      { k: 'BATTERY PACK A', pct: 22, v: '132 h left' },
+      { k: 'TILT ACTUATORS', pct: 78, v: '468 h left' },
+      { k: 'GENERATOR SET', pct: 41, v: '246 h left' },
+      { k: 'AIRFRAME CYCLES', pct: 88, v: '1,240 cyc' }
+    ].map(p => ({
+      k: p.k, v: p.v, color: p.pct < 25 ? '#FF8874' : (p.pct < 50 ? '#FAC83C' : '#3DDC97'),
+      barStyle: 'position:absolute;left:0;top:0;bottom:0;width:' + p.pct + '%;background:' +
+        (p.pct < 25 ? '#FF8874' : (p.pct < 50 ? '#FAC83C' : '#3DDC97'))
+    }));
+
+    const authority = [
+      { id: 'close', label: 'CLOSE THE WORK', color: '#3DDC97',
+        text: 'Certify the check complete. Hours reset to zero, the airframe returns to the roster and Roster is notified.',
+        run: () => { C.closeWork(s, a.cs); C.save(s); this.setState({ decision: 'closed' }); } },
+      { id: 'extend', label: 'EXTEND OPERATIONS +' + C.EXTEND_H + ' h', color: '#FAC83C',
+        text: 'Maintenance holds the authority to extend. The check moves to ' + (a.total + C.EXTEND_H) +
+          ' h under a continuing-airworthiness concession and the aircraft keeps flying.',
+        run: () => { C.extendOps(s, a.cs); C.save(s); this.setState({ decision: 'extended' }); } }
+    ].map(o => Object.assign({}, o, {
+      btnStyle: 'width:100%;text-align:left;background:#181C22;border:1px solid #2E343D;border-left:2px solid ' +
+        o.color + ';padding:11px 12px;cursor:pointer;font-family:Archivo,sans-serif',
+      labelStyle: "font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:0.06em;color:" + o.color
+    }));
+
+    const opts = [
+      { k: MRO[0].id + ' · 0 km', v: 'Already at ' + zone.base + '. Slot open at 06:00, certifying staff on shift, no ferry flight required.', cost: 'NO FERRY', color: '#3DDC97', id: 'hyd' },
+      { k: 'SPOKE LINE · ' + (C.route(C.zRoutes(s)[0].id) || {}).km + ' km', v: 'Line check capability only, and this event needs rotor capability.', cost: 'NOT CAPABLE', color: '#FF8874', id: 'vja' },
+      { k: 'ENS HUB · FERRY', v: 'Full capability with an open slot, but the aircraft leaves the Indian network for nine days.', cost: '9 DAYS OUT', color: '#FAC83C', id: 'ens' }
+    ].map(o => Object.assign({}, o, {
+      run: () => this.setState({ decision: o.id }),
+      btnStyle: 'width:100%;text-align:left;background:' + (this.state.decision === o.id ? '#1B2027' : '#181C22') +
+        ';border:1px solid ' + (this.state.decision === o.id ? '#3A424E' : '#2E343D') + ';border-left:2px solid ' + o.color + ';padding:10px 11px;cursor:pointer;font-family:Archivo,sans-serif'
+    }));
+
+    const dmap = {
+      hyd: { t: a.cs + ' SCHEDULED · ' + MRO[0].id + ' 06:00 · ROSTER NOTIFIED', c: '#101216', bg: '#3DDC97' },
+      vja: { t: 'REJECTED — SPOKE LINE NOT RATED FOR THIS EVENT', c: '#FF8874', bg: 'transparent' },
+      ens: { t: a.cs + ' FERRY FILED TO ENS · 9 DAYS OUT OF NETWORK', c: '#FAC83C', bg: 'transparent' }
+    };
+    const d = dmap[this.state.decision];
+    const due = dueSoon.length;
+
+    return {
+      dueCount: due,
+      clockLabel: 'CLOCK · ' + ({ AIR: 'VECTOR AIR', MAINT: 'THIS CONSOLE', GROUND: 'VECTOR GROUND', ROSTER: 'VECTOR ROSTER' }[C.clockOwner()] || 'IDLE') + ' · T+' + Math.round(s.t * 0.05) + ' h',
+      selFlown: a.flown + ' h flown · ' + a.h + ' h to check',
+      zoneLabel: zone.label.toUpperCase(),
+      fleetCount: FLEET.length,
+      hubCount: MRO.length,
+      dueStyle: 'color:' + (due ? '#FF8874' : '#3DDC97'),
+      sorts, fleet, hubs, routeOptions: opts,
+      sel: {
+        cs: a.cs, status: a.status, parts,
+        stateStyle: "font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.08em;padding:2px 8px;border:1px solid " +
+          (a.status === 'GROUNDED' ? '#E8523F' : '#3A404A') + ';color:' + (a.status === 'GROUNDED' ? '#FF8874' : '#C8CDD4')
+      },
+      decided: !!d,
+      decisionText: d ? d.t : '',
+      decisionStyle: d ? "margin-top:11px;padding:10px 11px;font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.45;letter-spacing:0.08em;color:" +
+        d.c + ';background:' + d.bg + ';border:1px solid ' + (d.bg === 'transparent' ? d.c : d.bg) : '',
+      authority,
+      holding, holdingCount: holding.length,
+      mroLabel: mro.label + ' · ' + used + ' OF ' + capN + ' SLOTS',
+      noHolding: holding.length === 0,
+      dueSoonCount: dueSoon.length,
+      groundedCount: grounded.length,
+      handoffs: s.log.slice(0, 6).map(l => ({ src: l.src, text: l.text, color: l.c }))
+    };
+  }
+}
+
+</script>
+</body>
+</html>

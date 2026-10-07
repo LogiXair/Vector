@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="vector-core.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #0B0D10; }
+  body { font-family: Archivo, Helvetica, sans-serif; -webkit-font-smoothing: antialiased; }
+  a { color: #FF8874; text-decoration: none; }
+  a:hover { color: #E9EAEC; }
+  @keyframes vPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.2; } }
+
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:#0B0D10;color:#E9EAEC;display:flex;flex-direction:column">
+
+  <header style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 20px;padding:11px 18px;background:#14171C;border-bottom:1px solid #262A31">
+    <div style="display:flex;align-items:center;gap:14px">
+      <a href="Logixair Vector.dc.html" style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;color:#939BA5">← LOGIXAIR</a>
+      <div style="display:flex;align-items:baseline;gap:9px">
+        <span style="font-size:15px;font-weight:800;letter-spacing:-0.01em">VECTOR</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.18em;color:#E8523F">AIR</span>
+      </div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em">
+      <a href="Vector Ground.dc.html" style="{{ navGround }}">GROUND<sc-if value="{{ groundBadge }}" hint-placeholder-val="{{ false }}"><span style="color:#3DDC97"> ●</span></sc-if></a>
+      <span style="color:#101216;background:#E8523F;padding:6px 11px">AIR</span>
+      <a href="Vector Maintenance.dc.html" style="color:#939BA5;border:1px solid #262A31;padding:6px 11px">MAINTENANCE</a>
+      <a href="Vector Roster.dc.html" style="{{ navRoster }}">ROSTER<sc-if value="{{ rosterBadge }}" hint-placeholder-val="{{ false }}"><span style="color:#C08CF0"> ●</span></sc-if></a>
+    </div>
+    <div style="display:flex;align-items:stretch;gap:0;border:1px solid #2E343D">
+      <sc-for list="{{ zones }}" as="z" hint-placeholder-count="2">
+        <button type="button" onClick="{{ z.pick }}" style="{{ z.style }}">
+          <span style="font-size:10.5px;letter-spacing:0.1em;display:block">{{ z.label }}</span>
+          <span style="font-size:9px;letter-spacing:0.06em;display:block;margin-top:3px;opacity:0.72">{{ z.sub }}</span>
+        </button>
+      </sc-for>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em;color:#939BA5">
+      <span style="color:#E9EAEC">{{ clock }} IST</span>
+      <span>{{ acAirborne }} AIRBORNE</span>
+      <span style="{{ standStyle }}">{{ standState }}</span>
+      <span style="{{ sepStyle }}">AUTO-SEP {{ sepState }}</span>
+      <button type="button" onClick="{{ toggleRun }}" style="{{ runStyle }}">{{ runLabel }}</button>
+      <button type="button" onClick="{{ reset }}" style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em;padding:6px 10px;cursor:pointer;border:1px solid #3A404A;background:transparent;color:#939BA5">RESET SIM</button>
+    </div>
+  </header>
+
+  <sc-if value="{{ hasDecision }}" hint-placeholder-val="{{ false }}">
+    <sc-for list="{{ decisions }}" as="decision" hint-placeholder-count="1">
+    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px;padding:13px 18px;background:#2A1B10;border-bottom:1px solid #4A3520">
+      <span style="display:inline-block;width:9px;height:9px;background:{{ decision.color }};animation:vPulse 1s infinite;flex:0 0 auto"></span>
+      <div style="flex:1 1 300px;min-width:0">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.12em;color:{{ decision.color }};margin-bottom:4px">{{ decision.kind }} · {{ decision.cs }} · HOLDING</div>
+        <div style="font-size:13.5px;line-height:1.45;color:#E9EAEC;text-wrap:pretty">{{ decision.text }}</div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:7px">
+        <sc-for list="{{ decision.options }}" as="o" hint-placeholder-count="3">
+          <button type="button" onClick="{{ o.run }}" style="{{ o.style }}">{{ o.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+
+  <div style="display:flex;flex-wrap:wrap;align-items:stretch;flex:1">
+
+    <div style="flex:1 1 280px;min-width:0;border-right:1px solid #262A31;background:#101216;display:flex;flex-direction:column">
+
+      <div style="padding:13px 15px;border-bottom:1px solid #262A31">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:9px;margin-bottom:10px">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;color:#939BA5">PILOT INBOX</span>
+          <span style="{{ inboxCountStyle }}">{{ inboxCount }}</span>
+        </div>
+        <sc-if value="{{ hasInbox }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <sc-for list="{{ inbox }}" as="n" hint-placeholder-count="2">
+              <div style="padding:11px 12px;background:#181C22;border:1px solid #3A2A26;border-left:2px solid #FF8874">
+                <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.1em;color:#FF8874;margin-bottom:6px">FROM GROUND · {{ n.kind }}</div>
+                <div style="font-size:13.5px;font-weight:700;margin-bottom:5px">{{ n.title }}</div>
+                <div style="font-size:12px;line-height:1.5;color:#C8CDD4;margin-bottom:10px;text-wrap:pretty">{{ n.text }}</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;line-height:1.6;letter-spacing:0.06em;color:#939BA5;padding:8px 10px;background:#12161B;margin-bottom:9px">ORCHESTRATOR SUGGESTS<br><span style="color:#C08CF0">{{ n.suggest }}</span></div>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">
+                  <sc-for list="{{ n.pilots }}" as="p" hint-placeholder-count="3">
+                    <button type="button" onClick="{{ p.pick }}" style="{{ p.style }}">{{ p.label }}</button>
+                  </sc-for>
+                </div>
+                <button type="button" onClick="{{ n.accept }}" style="width:100%;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.08em;padding:10px 0;cursor:pointer;border:0;background:#E8523F;color:#101216">ACCEPT FLIGHT →</button>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ inboxEmpty }}" hint-placeholder-val="{{ true }}">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;line-height:1.7;letter-spacing:0.06em;color:#8A929C;padding:10px 11px;background:#181C22;border:1px solid #262A31">NO FLIGHTS AWAITING ACCEPTANCE<br>Ground pushes releases here.</div>
+        </sc-if>
+      </div>
+
+      <div style="padding:13px 15px;border-bottom:1px solid #262A31">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;color:#939BA5;margin-bottom:10px">ROUTES · CORRIDOR DENSITY</div>
+        <div style="display:flex;flex-direction:column;gap:7px">
+          <sc-for list="{{ routes }}" as="r" hint-placeholder-count="3">
+            <button type="button" onClick="{{ r.select }}" style="{{ r.btnStyle }}">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:9px;margin-bottom:7px">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:{{ r.color }}">{{ r.id }}</span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.08em;color:#939BA5">{{ r.name }}</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="flex:1;height:5px;background:#22262C;position:relative;overflow:hidden">
+                  <div style="{{ r.barStyle }}"></div>
+                </div>
+                <span style="{{ r.densityStyle }}">{{ r.count }}/{{ r.cap }}</span>
+              </div>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="padding:13px 15px;border-bottom:1px solid #262A31">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;color:#939BA5;margin-bottom:10px">SUPERVISORY PILOTS</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <sc-for list="{{ pilots }}" as="p" hint-placeholder-count="3">
+            <div style="padding:9px 11px;background:#181C22;border:1px solid #262A31">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+                <span style="font-size:12.5px;font-weight:600">{{ p.name }}</span>
+                <span style="{{ p.loadStyle }}">{{ p.load }}/{{ p.max }}</span>
+              </div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.08em;color:#868E99;margin-top:5px">{{ p.station }} · {{ p.assigned }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="padding:13px 15px;flex:1">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;color:#939BA5;margin-bottom:10px">ORCHESTRATOR LOG</div>
+        <div style="display:flex;flex-direction:column;gap:5px">
+          <sc-for list="{{ feed }}" as="f" hint-placeholder-count="5">
+            <div style="display:flex;gap:9px;padding:7px 10px;background:#181C22;border-left:2px solid {{ f.c }}">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.08em;color:{{ f.c }};flex:0 0 50px">{{ f.src }}</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:9.5px;line-height:1.45;color:#C8CDD4">{{ f.text }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+    <div style="flex:3 1 520px;min-width:0;display:flex;flex-direction:column">
+      <div style="position:relative;aspect-ratio:16/10;min-height:360px;background:#0B0D10;overflow:hidden;border-bottom:1px solid #262A31">
+        <div style="position:absolute;inset:0;background:radial-gradient(circle at 30% 20%, #12161B 0%, #0B0D10 70%)"></div>
+        <div style="position:absolute;inset:0">{{ corridorSvg }}</div>
+
+        <sc-for list="{{ mapHubs }}" as="h" hint-placeholder-count="4">
+          <div style="position:absolute;left:{{ h.x }}%;top:{{ h.y }}%">
+            <div style="{{ h.dotStyle }}"></div>
+            <div style="{{ h.labelStyle }}">{{ h.label }}<br><span style="color:{{ h.capColor }}">{{ h.occ }}</span></div>
+          </div>
+        </sc-for>
+
+        <sc-for list="{{ aircraft }}" as="a" hint-placeholder-count="6">
+          <div style="position:absolute;left:{{ a.x }}%;top:{{ a.y }}%;transform:translate(-50%,-50%)">
+            <sc-if value="{{ a.holding }}" hint-placeholder-val="{{ false }}">
+              <div style="position:absolute;left:-26px;top:-26px;width:52px;height:52px;border:1px dashed rgba(250,200,60,0.6);border-radius:50%;pointer-events:none"></div>
+            </sc-if>
+            <button type="button" onClick="{{ a.select }}" style="{{ a.dotStyle }}"></button>
+            <div style="{{ a.tagStyle }}">{{ a.cs }} · {{ a.altLabel }}<br><span style="color:#868E99">{{ a.gcs }}</span></div>
+          </div>
+        </sc-for>
+
+        <div style="position:absolute;left:12px;bottom:10px;display:flex;flex-wrap:wrap;gap:6px 16px;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.08em;color:#939BA5;pointer-events:none;text-shadow:0 1px 4px #000">
+          <span>CORRIDOR PLAN VIEW</span>
+          <span>AUTO-SEP 200 ft / 3.0 km</span>
+          <span>HOLD = 1.2 km ORBIT</span>
+        </div>
+      </div>
+
+      <div style="position:relative;height:250px;background:#0E1115;border-bottom:1px solid #262A31;overflow:hidden">
+        <div style="position:absolute;inset:0">{{ stackSvg }}</div>
+        <div style="position:absolute;left:11px;top:9px;font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.1em;color:#939BA5">ALTITUDE STACK · {{ selectedRouteId }} · AUTO-ASSIGNED LEVELS</div>
+        <sc-for list="{{ stackTags }}" as="s" hint-placeholder-count="3">
+          <div style="{{ s.rowStyle }}">
+            <div style="{{ s.labelStyle }}">{{ s.label }}</div>
+          </div>
+          <div style="position:absolute;left:{{ s.x }}%;top:{{ s.y }}%;transform:translate(-50%,-50%)">
+            <div style="{{ s.dotStyle }}"></div>
+          </div>
+        </sc-for>
+        <sc-for list="{{ stackGaps }}" as="g" hint-placeholder-count="2">
+          <div style="{{ g.style }}">{{ g.label }}</div>
+        </sc-for>
+      </div>
+
+      <div style="display:flex;flex-wrap:wrap">
+        <sc-for list="{{ metrics }}" as="m" hint-placeholder-count="6">
+          <div style="flex:1 1 120px;min-width:0;padding:11px 14px;border-right:1px solid #262A31;background:#101216">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.12em;color:#939BA5;margin-bottom:6px">{{ m.k }}</div>
+            <div style="{{ m.vStyle }}">{{ m.v }}</div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="padding:15px;border-top:1px solid #262A31">
+        <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:9px;margin-bottom:11px">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;color:#939BA5">FLEET LEDGER · EVERY AIRFRAME ACCOUNTED FOR</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.08em;white-space:nowrap;color:#939BA5">{{ ledgerSummary }}</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px;max-height:340px;overflow-y:auto;padding-right:4px">
+          <sc-for list="{{ ledger }}" as="l" hint-placeholder-count="8">
+            <button type="button" onClick="{{ l.sel }}" style="{{ l.rowStyle }}">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;color:#E9EAEC;flex:0 0 76px;text-align:left">{{ l.cs }}</span>
+              <span style="{{ l.stateStyle }}">{{ l.state }}</span>
+              <span style="font-size:12.5px;color:#C8CDD4;flex:1 1 180px;text-align:left">{{ l.doing }}</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.06em;color:#8A929C;flex:0 0 auto">{{ l.where }}</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.06em;color:#6E7682;flex:1 1 100%;text-align:left">{{ l.meta }}</span>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+    <div style="flex:1 1 310px;min-width:0;border-left:1px solid #262A31;background:#101216;display:flex;flex-direction:column">
+      <sc-if value="{{ hasSelection }}" hint-placeholder-val="{{ true }}">
+        <div style="padding:14px 15px;border-bottom:1px solid #262A31">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:9px;margin-bottom:11px">
+            <span style="font-size:17px;font-weight:800;letter-spacing:-0.01em">{{ sel.cs }}</span>
+            <span style="{{ sel.stateStyle }}">{{ sel.state }}</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:5px">
+            <sc-for list="{{ sel.rows }}" as="r" hint-placeholder-count="9">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 10px;background:#181C22;border:1px solid #262A31">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.08em;color:#939BA5">{{ r.k }}</span>
+                <span style="{{ r.vStyle }}">{{ r.v }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:11px">
+            <sc-for list="{{ sel.actions }}" as="a" hint-placeholder-count="3">
+              <button type="button" onClick="{{ a.run }}" style="{{ a.style }}">{{ a.label }}</button>
+            </sc-for>
+          </div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:9px;line-height:1.7;letter-spacing:0.06em;color:#8A929C;margin-top:10px">SEPARATION IS HELD AUTOMATICALLY. MANUAL ACTIONS ARE SUPERVISORY OVERRIDES.</div>
+        </div>
+      </sc-if>
+
+      <div style="padding:14px 15px;border-bottom:1px solid #262A31">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;color:#939BA5;margin-bottom:10px">TRAFFIC · {{ selectedRouteId }}</div>
+        <div style="display:flex;flex-direction:column;gap:5px">
+          <sc-for list="{{ routeTraffic }}" as="t" hint-placeholder-count="4">
+            <button type="button" onClick="{{ t.select }}" style="{{ t.rowStyle }}">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#E9EAEC;flex:0 0 72px;text-align:left">{{ t.cs }}</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#C8CDD4;flex:0 0 58px;text-align:right">{{ t.alt }}</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#868E99;flex:1 1 50px;text-align:right">{{ t.gcs }}</span>
+              <span style="{{ t.pillStyle }}">{{ t.tag }}</span>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="padding:14px 15px;flex:1">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.14em;color:#939BA5;margin-bottom:10px">GROUND STATION LINKS</div>
+        <div style="display:flex;flex-direction:column;gap:5px">
+          <sc-for list="{{ stations }}" as="s" hint-placeholder-count="4">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:9px;padding:9px 11px;background:#181C22;border:1px solid #262A31;border-left:2px solid {{ s.color }}">
+              <div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;color:#E9EAEC">{{ s.id }}</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.06em;color:#868E99;margin-top:4px">{{ s.site }}</div>
+              </div>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:9.5px;color:{{ s.color }};text-align:right">{{ s.holding }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.1em;color:#8A929C;margin-top:14px;line-height:1.8">SIMULATED TRAFFIC · NOT FOR OPERATIONAL USE<br>VECTOR AIR v1.0 · AI ORCHESTRATED, HUMAN SUPERVISED</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  state = { tick: 0, running: true, route: 'C-14', sel: null, pick: {} };
+  C = window.VectorCore;
+  s = window.VectorCore ? window.VectorCore.load() : null;
+
+  componentDidMount() {
+    this.C = window.VectorCore;
+    if (!this.s) this.s = this.C.load();
+    /* Air owns the clock: it steps the shared state the other three consoles read */
+    this.onStorage = e => {
+      if (e.key !== this.C.KEY) return;
+      this.s = this.C.load();
+      this.setState(st => ({ tick: st.tick + 1 }));
+    };
+    window.addEventListener('storage', this.onStorage);
+    /* the sim advances on elapsed wall time, so a throttled or backgrounded tab
+       catches up instead of falling behind */
+    this.lastT = Date.now();
+    this.timer = setInterval(() => {
+      const now = Date.now();
+      this.C.clockLease('AIR', true);
+      if (this.state.running) {
+        let n = Math.min(40, Math.max(1, Math.round((now - this.lastT) / 140)));
+        while (n--) this.C.step(this.s);
+        /* the whole state is one JSON blob, so writing it every frame is what
+           made the console slow to open; publish it a few times a second */
+        if (!this.lastSave || now - this.lastSave > 600) {
+          this.C.save(this.s);
+          this.lastSave = now;
+        }
+      }
+      this.lastT = now;
+      this.setState(st => ({ tick: st.tick + 1 }));
+    }, 140);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timer);
+    window.removeEventListener('storage', this.onStorage);
+  }
+
+  commit(fn) { fn(); this.C.save(this.s); this.forceUpdate(); }
+
+  renderVals() {
+    const R = React.createElement;
+    const C = this.C, s = this.s;
+    if (!C || !s) return {};
+    const mono = "font-family:'JetBrains Mono',monospace;font-size:10.5px;";
+    const ok = mono + 'color:#3DDC97', bad = mono + 'color:#FF8874', warn = mono + 'color:#FAC83C', neu = mono + 'color:#E9EAEC';
+
+    const zFleet = C.zFleet(s);
+    const flying = zFleet.filter(a => a.state !== 'GROUND' && a.state !== 'MAINT');
+    const zr = C.zRoutes(s);
+    const zones = C.ZONES.map(z => {
+      const on = C.zid(s) === z.id;
+      const n = s.fleet.filter(a => (a.zone || 'SOUTH') === z.id).length;
+      return {
+        label: z.label.toUpperCase(),
+        sub: z.tons + ' T/DAY · ' + n + ' AIRFRAMES',
+        style: "font-family:'JetBrains Mono',monospace;text-align:left;padding:7px 13px;cursor:pointer;border:0;" +
+          'background:' + (on ? '#E8523F' : 'transparent') + ';color:' + (on ? '#101216' : '#939BA5'),
+        pick: () => {
+          C.setZone(s, z.id);
+          C.save(s);
+          const first = C.zRoutes(s)[0];
+          this.setState({ sel: null, pick: {}, route: first ? first.id : null });
+        }
+      };
+    });
+    const routeId = zr.some(r => r.id === this.state.route) ? this.state.route : (zr[0] || {}).id;
+    const route = C.route(routeId);
+
+    const ptOf = a => {
+      const r = C.route(a.r);
+      if (!r) { const h = C.hub(a.at); return { x: h ? h.x : 8, y: h ? h.y : 80 }; }
+      const base = C.pos(r, a.p);
+      if (a.hold) {
+        const ang = a.hold * 0.9;
+        return { x: base.x + Math.cos(ang) * 3.4, y: base.y + Math.sin(ang) * 3.4 };
+      }
+      return base;
+    };
+
+    const corridorSvg = R('svg', { viewBox: '0 0 100 100', preserveAspectRatio: 'none',
+      style: { position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' } },
+      C.zMapRoutes(s).map(r => {
+        const on = r.id === routeId;
+        const d = r.pts.map((p, i) => (i ? 'L' : 'M') + p[0] + ' ' + p[1]).join(' ');
+        return R('g', { key: r.id }, [
+          R('path', { key: 'g', d, fill: 'none', stroke: r.color, strokeWidth: on ? 10 : 6,
+            vectorEffect: 'non-scaling-stroke', opacity: on ? 0.14 : 0.06 }),
+          R('path', { key: 'l', d, fill: 'none', stroke: r.color, strokeWidth: on ? 1.6 : 0.9,
+            vectorEffect: 'non-scaling-stroke', opacity: on ? 0.95 : 0.4,
+            strokeDasharray: on ? null : '5 5' })
+        ]);
+      })
+    );
+
+    const mapHubs = C.zMapHubs(s).map(h => {
+      const o = C.occupancy(s, h.id);
+      const isMro = h.type === 'MRO';
+      const mUsed = isMro ? C.mroLoad(s, h.id) : 0;
+      const over = !isMro && o.parked > h.cap;
+      const qFor = zFleet.filter(x => x.holdFor === 'STAND' && x.dest === h.id).length;
+      return {
+        label: h.label, x: h.x, y: h.y,
+        occ: isMro
+          ? mUsed + '/' + h.slots + ' SLOTS'
+          : o.parked + '/' + h.cap + (o.inbound ? ' +' + o.inbound : '') +
+            (qFor ? ' · ' + qFor + ' HOLDING' : ''),
+        capColor: isMro ? '#FF8874'
+          : (over || qFor) ? '#FF8874'
+          : (o.parked >= h.cap ? '#FAC83C' : '#3DDC97'),
+        dotStyle: 'position:absolute;left:-5px;top:-5px;width:11px;height:11px;background:' +
+          (h.type === 'MRO' ? '#2A1B10' : '#0B0D10') + ';border:1.5px solid ' +
+          (h.type === 'BASE' ? '#E9EAEC' : h.type === 'MRO' ? '#FF8874' : '#868E99') +
+          (h.type === 'MRO' ? ';border-radius:50%' : ''),
+        labelStyle: 'position:absolute;top:-38px;' + (h.x > 62 ? 'right:10px;text-align:right;' : 'left:10px;') +
+          "font-family:'JetBrains Mono',monospace;font-size:9px;line-height:1.5;letter-spacing:0.06em;white-space:nowrap;color:#E9EAEC;text-shadow:0 1px 4px #000"
+      };
+    });
+
+    this.lastRouteId = routeId;
+    const selCs = this.state.sel || (flying[0] ? flying[0].cs : null);
+    let tagIx = 0;
+    const aircraft = flying.map(a => {
+      const onRouteSel = a.r === routeId;
+      const pt = ptOf(a);
+      const isSel = a.cs === selCs;
+      const r = C.route(a.r);
+      const col = a.hold ? '#FAC83C' : (a.r === routeId ? (r ? r.color : '#78AAFF') : '#5B636E');
+      return {
+        cs: a.cs,
+        x: pt.x, y: pt.y,
+        holding: !!a.hold, color: col, selected: isSel,
+        dir: a.dir, onSelectedRoute: onRouteSel,
+        altLabel: Math.round(a.alt) + ' ft',
+        gcs: C.nearestGcs(pt, a.zone || 'SOUTH'),
+        select: () => this.setState({ sel: a.cs, route: a.r || this.state.route }),
+        dotStyle: 'width:0;height:0;padding:0;background:transparent;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:' +
+          (isSel ? 13 : 11) + 'px solid ' + col + ';transform:rotate(' + (a.dir > 0 ? 52 : 232) + 'deg) translate(-50%,-50%);cursor:pointer;display:block',
+        tagStyle: isSel
+          ? 'position:absolute;top:11px;' + (pt.x > 70 ? 'right:11px;text-align:right;' : 'left:11px;') +
+            "font-family:'JetBrains Mono',monospace;font-size:9px;line-height:1.5;letter-spacing:0.05em;white-space:nowrap;padding:2px 5px;background:rgba(11,13,16,0.82);color:" +
+            (a.hold ? '#FAC83C' : (isSel ? '#E9EAEC' : '#9BA1AA'))
+          : 'display:none'
+      };
+    });
+
+    this.lastAircraft = aircraft;
+
+    const routes = C.zRoutes(s).map(r => {
+      const n = flying.filter(a => a.r === r.id).length;
+      const pct = Math.min(100, n / r.cap * 100);
+      const hot = n / r.cap > 0.75;
+      const on = r.id === routeId;
+      return {
+        id: r.id, name: r.name, color: r.color, count: n, cap: r.cap,
+        select: () => this.setState({ route: r.id }),
+        btnStyle: 'text-align:left;width:100%;background:' + (on ? '#1B2027' : '#181C22') + ';border:1px solid ' +
+          (on ? '#3A424E' : '#262A31') + ';border-left:2px solid ' + (on ? r.color : 'transparent') + ';padding:10px 11px;cursor:pointer;font-family:Archivo,sans-serif',
+        barStyle: 'position:absolute;left:0;top:0;bottom:0;width:' + pct + '%;background:' + (hot ? '#FAC83C' : r.color),
+        densityStyle: "font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.06em;color:" + (hot ? '#FAC83C' : '#939BA5')
+      };
+    });
+
+    const pilots = C.zPilots(s).map(p => {
+      const mine = flying.filter(a => a.pilot === p.id);
+      const over = mine.length >= p.max;
+      return {
+        name: p.name, station: p.station, max: p.max, load: mine.length,
+        assigned: mine.map(a => a.cs.replace('LXA-', '')).join(' · ') || 'none',
+        loadStyle: "font-family:'JetBrains Mono',monospace;font-size:9.5px;padding:1px 6px;border:1px solid " +
+          (over ? '#FAC83C' : '#3DDC97') + ';color:' + (over ? '#FAC83C' : '#3DDC97')
+      };
+    });
+
+    // pilot inbox — releases pushed from Ground
+    const pending = C.zInbox(s, 'AIR').filter(n => n.state === 'PENDING');
+    const inbox = pending.map(n => {
+      const sug = C.suggestPilot(s);
+      const chosen = this.state.pick[n.id] || sug.id;
+      return {
+        kind: n.kind, title: n.title, text: n.text,
+        suggest: sug.name + ' · ' + C.pilotLoad(s, sug.id) + ' of ' + sug.max + ' aircraft · least loaded on shift',
+        pilots: C.zPilots(s).map(p => {
+          const load = C.pilotLoad(s, p.id);
+          const full = load >= p.max;
+          const on = p.id === chosen;
+          return {
+            label: p.name.split(' ').slice(1).join(' ') + ' ' + load + '/' + p.max,
+            pick: () => { if (!full) this.setState(st => ({ pick: Object.assign({}, st.pick, { [n.id]: p.id }) })); },
+            style: "font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.06em;padding:6px 9px;cursor:" +
+              (full ? 'not-allowed' : 'pointer') + ';border:1px solid ' + (on ? '#FF8874' : '#3A404A') +
+              ';background:' + (on ? '#2A1B18' : 'transparent') + ';color:' + (full ? '#8A929C' : (on ? '#FF8874' : '#C8CDD4'))
+          };
+        }),
+        accept: () => this.commit(() => {
+          C.accept(s, n.payload.cs, n.payload.demand, chosen);
+          n.state = 'ACCEPTED';
+          this.setState({ sel: n.payload.cs, route: C.routeFor(n.payload.from, n.payload.to) });
+        })
+      };
+    });
+
+    // open airspace event needing a decision
+    const decisions = C.zEvents(s).filter(e => e.state === 'OPEN').map(ev => ({
+      kind: ev.kind, cs: ev.cs, text: ev.text, color: ev.color,
+      options: [
+        { label: 'CLIMB OVER +600 ft', k: 'CLIMB', primary: true },
+        { label: 'CONTINUE AS FILED', k: 'CONTINUE' },
+        { label: 'DIVERT TO BASE', k: 'DIVERT' }
+      ].map(o => ({
+        label: o.label,
+        run: () => this.commit(() => C.resolveEvent(s, ev.id, o.k)),
+        style: "font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.08em;padding:11px 15px;cursor:pointer;white-space:nowrap;border:1px solid " +
+          (o.primary ? ev.color : '#5A4A33') + ';background:' + (o.primary ? ev.color : 'transparent') + ';color:' + (o.primary ? '#101216' : '#E9EAEC')
+      }))
+    }));
+
+    /* fleet ledger: every airframe in the zone, what it is doing and where.
+       Ordered so anything needing attention sits at the top. */
+    const rank = { HOLD: 0, MAINT: 1, POSITION: 2, CLIMB: 3, CRUISE: 4, DESCEND: 4, GROUND: 5 };
+    const ledger = zFleet.slice().sort((p, q) =>
+      (rank[p.hold ? 'HOLD' : (p.rev === false && p.state !== 'GROUND' && p.state !== 'MAINT' ? 'POSITION' : p.state)] ?? 6) -
+      (rank[q.hold ? 'HOLD' : (q.rev === false && q.state !== 'GROUND' && q.state !== 'MAINT' ? 'POSITION' : q.state)] ?? 6) ||
+      p.cs.localeCompare(q.cs)
+    ).map(x => {
+      const r = C.route(x.r);
+      const dem = s.demands.find(d => d.ac === x.cs && (d.state === 'AIRBORNE' || d.state === 'ASSIGNED' || d.state === 'READY'));
+      const flying = x.state !== 'GROUND' && x.state !== 'MAINT';
+      const st = x.hold ? 'HOLD' : (flying && x.rev === false ? 'POSITION' : x.state);
+      const col = st === 'HOLD' ? '#FAC83C' : (st === 'MAINT' || st === 'POSITION') ? '#FF8874'
+        : st === 'GROUND' ? '#868E99' : (r ? r.color : '#78AAFF');
+      const doing = x.state === 'MAINT'
+        ? (x.item || 'scheduled check') + ' · holding a slot until released'
+        : x.holdFor === 'STAND'
+          ? 'holding off ' + x.dest + ' · no stand free, orchestrator clearing the apron'
+        : x.hold ? 'holding in a 1.2 km orbit on an airspace event'
+        : flying && x.rev === false
+          ? 'positioning empty to ' + x.dest + ' · ' + (x.why || 'non-revenue') + ' · no revenue'
+        : flying ? (x.empty ? 'ferrying empty' : 'carrying ' + x.kg + ' kg') +
+            (dem ? ' · ' + dem.id : '') + ' to ' + x.dest
+        : dem ? 'loaded for ' + dem.id + ' · awaiting release' : 'on stand, available';
+      const where = x.state === 'MAINT' ? (C.hub(x.at) || {}).label || x.at
+        : flying ? x.r + ' · ' + Math.round(x.p * 100) + '%'
+        : x.at;
+      const pil = x.pilot ? C.pilotName(x.pilot) : null;
+      return {
+        cs: x.cs, state: st, doing, where,
+        meta: (flying ? Math.round(x.alt) + ' ft · ' + (pil || 'unsupervised') + ' · ' : '') +
+          Math.max(0, Math.round((x.due || C.CHECK_H) - (x.hrs || 0))) + ' h to check' +
+          (x.pod ? ' · pod ' + x.pod : ''),
+        sel: () => this.setState({ sel: x.cs }),
+        stateStyle: "font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.08em;white-space:nowrap;flex:0 0 auto;padding:1px 6px;border:1px solid " +
+          col + ';color:' + col,
+        rowStyle: 'display:flex;flex-wrap:wrap;align-items:center;gap:5px 10px;width:100%;padding:8px 10px;cursor:pointer;background:' +
+          (x.cs === selCs ? '#1E242C' : '#181C22') + ';border:1px solid ' +
+          (x.cs === selCs ? '#3A424E' : '#262A31')
+      };
+    });
+    const nPos = ledger.filter(l => l.state === 'POSITION').length;
+    const ledgerSummary = ledger.filter(l => l.state !== 'GROUND' && l.state !== 'MAINT').length +
+      ' FLYING' + (nPos ? ' (' + nPos + ' POSITIONING)' : '') + ' · ' +
+      ledger.filter(l => l.state === 'GROUND').length + ' ON STAND · ' +
+      ledger.filter(l => l.state === 'MAINT').length + ' IN MRO';
+
+    // altitude stack
+    const yFor = alt => 88 - (alt - 1000) / 5000 * 68;
+    const onRoute = flying.filter(a => a.r === routeId).sort((a, b) => a.p - b.p);
+    const stackSvg = R('svg', { viewBox: '0 0 100 100', preserveAspectRatio: 'none', style: { position: 'absolute', inset: 0, width: '100%', height: '100%' } }, [
+      R('line', { key: 'f', x1: 0, y1: yFor(1000), x2: 100, y2: yFor(1000), stroke: '#78AAFF', strokeWidth: 0.6, strokeDasharray: '3 3', vectorEffect: 'non-scaling-stroke', opacity: 0.55 }),
+      R('line', { key: 'c', x1: 0, y1: yFor(6000), x2: 100, y2: yFor(6000), stroke: '#78AAFF', strokeWidth: 0.6, strokeDasharray: '3 3', vectorEffect: 'non-scaling-stroke', opacity: 0.55 })
+    ]);
+    const levels = [...new Set(onRoute.map(a => a.tgt || a.alt))].sort((p, q) => q - p);
+    const rowY = lvl => {
+      const i = levels.indexOf(lvl);
+      return 16 + (levels.length < 2 ? 34 : i / (levels.length - 1) * 70);
+    };
+    const stackTags = onRoute.map(a => {
+      const x = 6 + a.p * 88;
+      const level = a.tgt || a.alt;
+      const climbing = Math.abs(a.alt - level) > 60;
+      const arrow = climbing ? (a.alt < level ? '↑' : '↓') : '·';
+      return {
+        x, y: rowY(level),
+        label: a.cs.slice(4) + ' ' + arrow + ' ' + Math.round(a.alt),
+        dotStyle: 'width:8px;height:8px;background:' + (a.hold ? '#FAC83C' : (a.cs === selCs ? '#E9EAEC' : route.color)),
+        rowStyle: 'position:absolute;left:0;right:0;top:' + rowY(level) + '%;height:0',
+        labelStyle: 'position:absolute;left:11px;top:-5px;' +
+          "font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.05em;white-space:nowrap;color:" +
+          (climbing ? '#FAC83C' : (a.cs === selCs ? '#E9EAEC' : '#9BA1AA'))
+      };
+    });
+    /* one callout only, on the tightest in-trail pair — a callout per adjacent
+       pair puts several labels on the same midpoint */
+    let tightest = null;
+    for (let i = 0; i < onRoute.length - 1; i++) {
+      const A = onRoute[i], B = onRoute[i + 1];
+      if (A.dir !== B.dir) continue;
+      const dkm = Math.abs(A.p - B.p) * route.km;
+      if (!tightest || dkm < tightest.dkm) tightest = { A, B, dkm, dalt: Math.abs(A.tgt - B.tgt) };
+    }
+    const stackGaps = [];
+    if (tightest) {
+      const t = tightest.dkm < C.MIN_TRAIL_KM && tightest.dalt < 200;
+      stackGaps.push({
+        label: 'TIGHTEST ' + Math.round(tightest.dalt) + ' ft / ' + tightest.dkm.toFixed(1) + ' km',
+        style: "position:absolute;right:11px;bottom:9px;font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.05em;white-space:nowrap;padding:1px 5px;border:1px solid " +
+          (t ? '#FF8874' : '#2E343D') + ';color:' + (t ? '#FF8874' : '#6E7682')
+      });
+    }
+
+    const sel = zFleet.find(a => a.cs === selCs);
+    const selPt = sel ? ptOf(sel) : null;
+    const selRoute = sel ? C.route(sel.r) : null;
+    const selRows = sel ? [
+      { k: 'STATE', v: sel.state + (sel.hold ? ' · ORBIT' : ''), s: sel.hold ? warn : neu },
+      { k: 'ROUTE', v: sel.r ? sel.r + ' · ' + selRoute.name : 'ON STAND ' + sel.at, s: neu },
+      { k: 'ALT AGL', v: sel.state === 'GROUND' ? '—' : Math.round(sel.alt) + ' ft', s: neu },
+      { k: 'ASSIGNED LEVEL', v: sel.tgt ? sel.tgt + ' ft' : '—', s: sel.tgt !== sel.alt ? warn : ok },
+      { k: 'GCS LINK', v: sel.state === 'GROUND' ? (C.hub(sel.at) || {}).gcs : C.nearestGcs(selPt, sel.zone || 'SOUTH'), s: ok },
+      { k: 'PAYLOAD', v: sel.kg ? sel.kg + ' kg · ' + sel.pod : (sel.pod ? sel.pod + ' · EMPTY' : 'NO POD'), s: sel.kg ? neu : warn },
+      { k: 'DESTINATION', v: sel.dest || '—', s: neu },
+      { k: 'SUPERVISOR', v: sel.pilot ? C.pilotName(sel.pilot) : 'UNASSIGNED', s: neu },
+      { k: 'LEG', v: sel.empty ? 'EMPTY — REROUTABLE' : 'REVENUE', s: sel.empty ? warn : ok }
+    ] : [];
+
+    const actBtn = (label, run, primary) => ({
+      label, run,
+      style: "font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.08em;padding:9px 12px;cursor:pointer;border:1px solid " +
+        (primary ? '#E8523F' : '#3A404A') + ';background:' + (primary ? '#E8523F' : 'transparent') + ';color:' + (primary ? '#101216' : '#C8CDD4')
+    });
+    const selActions = sel && sel.state !== 'GROUND' ? [
+      actBtn(sel.hold ? 'RESUME' : 'ENTER HOLD', () => this.commit(() => {
+        if (sel.hold) { sel.hold = 0; sel.state = 'CRUISE'; }
+        else { sel.hold = 1; sel.state = 'HOLD'; }
+      }), true),
+      actBtn('CLIMB +200', () => this.commit(() => { sel.tgt = Math.min(6000, sel.tgt + 200); })),
+      actBtn('DESCEND −200', () => this.commit(() => { sel.tgt = Math.max(1000, sel.tgt - 200); }))
+    ] : (sel ? [actBtn('AT ' + sel.at + ' · AWAITING TASK', () => {})] : []);
+
+    const routeTraffic = onRoute.slice().reverse().map(a => ({
+      cs: a.cs, alt: Math.round(a.alt) + ' ft', gcs: C.nearestGcs(ptOf(a), a.zone || 'SOUTH'),
+      tag: a.hold ? 'HOLD' : a.state,
+      select: () => this.setState({ sel: a.cs }),
+      rowStyle: 'display:flex;flex-wrap:wrap;align-items:center;gap:8px;width:100%;background:' + (a.cs === selCs ? '#1B2027' : '#181C22') +
+        ';border:1px solid ' + (a.hold ? '#5A4A33' : '#262A31') + ';padding:8px 10px;cursor:pointer',
+      pillStyle: "font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:0.08em;padding:1px 6px;flex:0 0 auto;border:1px solid " +
+        (a.hold ? '#FAC83C' : '#3A404A') + ';color:' + (a.hold ? '#FAC83C' : '#939BA5')
+    }));
+
+    const stations = C.zHubs(s).map(h => {
+      const held = flying.filter(a => C.nearestGcs(ptOf(a), h.zone) === h.gcs);
+      return {
+        id: h.gcs, site: h.label, holding: held.length ? held.map(a => a.cs.slice(4)).join(' · ') : 'no traffic',
+        color: held.length ? '#3DDC97' : '#8A929C'
+      };
+    });
+
+    const seps = C.separation(s);
+    const tight = seps.filter(x => x.dkm < 3.0 && x.dalt < 200).length;
+    const groundPending = C.zInbox(s, 'GROUND').filter(n => n.state === 'PENDING').length;
+    const rosterPending = C.zInbox(s, 'ROSTER').filter(n => n.state === 'PENDING').length;
+    const navA = (base) => 'color:#939BA5;border:1px solid ' + base + ';padding:6px 11px';
+    const hh = 4 + Math.floor(s.t / 430), mm = (12 + Math.floor(s.t / 7)) % 60;
+
+    return {
+      clock: String(hh % 24).padStart(2, '0') + ':' + String(mm).padStart(2, '0'),
+      acAirborne: String(flying.length).padStart(2, '0'),
+      zones,
+      sepState: tight ? 'INTERVENING' : 'NOMINAL',
+      sepStyle: 'color:' + (tight ? '#FAC83C' : '#3DDC97'),
+      runLabel: this.state.running ? '❙❙ PAUSE' : '▶ RUN',
+      runStyle: "font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em;padding:6px 12px;cursor:pointer;border:1px solid #3A404A;background:transparent;color:#E9EAEC",
+      toggleRun: () => this.setState(st => ({ running: !st.running })),
+      reset: () => { this.s = C.reset(); this.setState({ sel: null, pick: {} }); },
+      navGround: navA(groundPending ? '#2C5C46' : '#262A31'),
+      navRoster: navA(rosterPending ? '#4A3560' : '#262A31'),
+      groundBadge: groundPending > 0,
+      rosterBadge: rosterPending > 0,
+      ledger, ledgerSummary,
+      standState: (() => {
+        const q = zFleet.filter(x => x.holdFor === 'STAND');
+        if (!q.length) return 'STANDS AVAILABLE';
+        return q.length + ' HOLDING FOR A STAND · ' +
+          [...new Set(q.map(x => x.dest))].join(', ');
+      })(),
+      standStyle: 'font-family:inherit;color:' +
+        (zFleet.some(x => x.holdFor === 'STAND') ? '#FF8874' : '#939BA5'),
+      routes, pilots, aircraft, stackSvg, stackTags, stackGaps,
+      corridorSvg, mapHubs,
+      legend: C.zRoutes(s).map(r => ({ label: r.id + ' · ' + r.name, swatch: 'display:inline-block;width:14px;height:2px;background:' + r.color })),
+      selectedRouteId: routeId,
+      inbox, hasInbox: inbox.length > 0, inboxEmpty: inbox.length === 0,
+      inboxCount: inbox.length ? inbox.length + ' PENDING' : 'CLEAR',
+      inboxCountStyle: "font-family:'JetBrains Mono',monospace;font-size:9.5px;padding:1px 7px;border:1px solid " +
+        (inbox.length ? '#FF8874' : '#3A404A') + ';color:' + (inbox.length ? '#FF8874' : '#8A929C'),
+      hasDecision: decisions.length > 0, decisions,
+      hasSelection: !!sel,
+      sel: sel ? {
+        cs: sel.cs, state: sel.state, rows: selRows.map(r => ({ k: r.k, v: r.v, vStyle: r.s })), actions: selActions,
+        stateStyle: "font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:0.08em;padding:2px 8px;border:1px solid " +
+          (sel.hold ? '#FAC83C' : '#3A404A') + ';color:' + (sel.hold ? '#FAC83C' : '#C8CDD4')
+      } : null,
+      routeTraffic, stations,
+      feed: s.log.slice(0, 6),
+      metrics: [
+        { k: 'AIRBORNE', v: String(flying.length), s: neu },
+        { k: 'IN HOLD', v: String(flying.filter(a => a.hold).length), s: flying.filter(a => a.hold).length ? warn : ok },
+        { k: 'EMPTY LEGS', v: String(flying.filter(a => a.empty).length), s: warn },
+        { k: 'TIGHTEST PAIR', v: seps.length ? Math.min.apply(null, seps.map(x => x.dkm)).toFixed(1) + ' km' : '—', s: tight ? bad : ok },
+        { k: 'AUTO-SEP ACTIONS', v: String(s.log.filter(l => l.src === 'AI').length), s: neu },
+        { k: 'SIM', v: this.state.running ? 'RUNNING' : 'PAUSED', s: this.state.running ? ok : warn }
+      ].map(m => ({ k: m.k, v: m.v, vStyle: m.s }))
+    };
+  }
+}
+
+</script>
+</body>
+</html>
